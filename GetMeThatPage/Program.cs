@@ -14,6 +14,7 @@ namespace GetMeThatPage
             var url = "http://books.toscrape.com/";
             var web = new HtmlWeb();
             var doc = web.Load(url);
+            doc.Save("local_copy.html");
 
             Console.ReadKey();
         }
