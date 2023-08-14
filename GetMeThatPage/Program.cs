@@ -1,21 +1,21 @@
-﻿using HtmlAgilityPack;
+﻿using GetMeThatPage.Parser;
+using HtmlAgilityPack;
+
 
 namespace GetMeThatPage
 {
     internal class Program
     {
-        private static Stream filePath;
+        private static String webPageUrl = "http://books.toscrape.com/";
+        private static string savePath = AppDomain.CurrentDomain.BaseDirectory;
 
         static void Main(string[] args)
         {
             Console.WriteLine("Scrap, scrap, get some HTML snack...");
-
-            // From Web
-            var url = "http://books.toscrape.com/";
             var web = new HtmlWeb();
-            var doc = web.Load(url);
-            doc.Save("local_copy.html");
-
+            HtmlDocument? doc = web.Load(webPageUrl);
+            Functions.CopyWebPageDataToDirectories(webPageUrl, savePath).Wait();
+            Console.WriteLine("Download completed!");
             Console.ReadKey();
         }
     }
