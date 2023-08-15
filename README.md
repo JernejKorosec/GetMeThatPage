@@ -53,6 +53,7 @@ If you need any additional functionality, get in touch.
 
 ## Contact
 
-[![Email](https://example.com/envelope-icon.png)](mailto:lead.razvijalec@gmail.com)
+:email:[Jernej Korošec](mailto:lead.razvijalec@gmail.com)
+
 You can reach me at [lead.razvijalec@gmail.com](mailto:lead.razvijalec@gmail.com).
 
