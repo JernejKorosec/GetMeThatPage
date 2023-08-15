@@ -53,7 +53,7 @@ If you need any additional functionality, get in touch.
 
 ## Contact
 
-:email:[Jernej Korošec](mailto:lead.razvijalec@gmail.com)
 
-You can reach me at [lead.razvijalec@gmail.com](mailto:lead.razvijalec@gmail.com).
+
+You can reach me at :email:[lead.razvijalec@gmail.com](mailto:lead.razvijalec@gmail.com)
 
