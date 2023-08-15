@@ -13,11 +13,10 @@ namespace GetMeThatPage.Parser
             string savepathRoot = webScraper.SavePath;
             // TODO is to refactor this for traversing
 
+
+            // First we create a List containing pages
             PagesList pagesList = new PagesList();
-            Page page = new Page();
-
-
-
+            Page page = new Page().SetUrlAndLocalRoot(urlRoot, savepathRoot);
 
             // Tole pohendla za en html
             Dictionary<string, List<string>> linksUrls = await CopyWebPageDataToDirectories(urlRoot, savepathRoot);
