@@ -1,37 +1,53 @@
-﻿Torej lepo po vrsti...
+﻿# Get Me That Page
 
-1. Najprej gremo na prvo stran 
-	- shranimo vse linke v List objektov:
-		- delimo jih na različne datoteke:
-			- Javascript datoteke
-			- Slike (png, jpeg, jpg, tiff, bmp,...)
-			- Ostal Resource
-	- Pogledamo kateri linki so sledljivi in kateri ne,
-	to označimo v liusti objektov kateri se rekruzivno pregledajo (linki)
+A project I did for Tretton37, i had a few hours to spend :)
 
 
+## Table of Contents
 
-1.
-- pogledam stran
-- shranim si vse linke ki so lokalni (začnejo se z / ali pač nimajo https ali https spredaj)
+- [Introduction](#introduction)
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
 
-2.
-Ko imam listo vseh linkov
-shranim vse datoteke, to naredim na sledeci nacin:
-	- pogledam ali v absolutni poti linka obstaja že istoimenski lokalni direktorij
-	- če ne obstaja ga kreiram in naredim http request na link da shranim vsebino datoteke lokalno
+## Introduction
 
-3.
-To naredim za vse strani
+The project is a web scrapper for a specific web page, Just run the code and your page gets scrapped.
+Since it is a 3 to 6 hour project it was throughly tested only on a specific web page https://books.toscrape.com
 
-4. 
-pregledam izjeme.
+## Features and Futures
+
+There are many great features in code from Design Patterns, Future Implementation Ideas to Programming Principles:
+- Singleton (DP)
+- Builder (DP)
+- Chaining (DP)
+- Solid as possible (PP)
+- CLI (FII)
+- NON-Blocking (FII)
+- Async (FII)
+- MultiThreaded Scraper (FII)
+- Https 3.0 (FII)
+- Many more...
+
+## Getting Started
+
+You need Latest updates of Visual Studio 2022 Since the code runs and it is written in .Net 7 (Core 7) since Net 8 isn't released yet.
+
+### Prerequisites
+
+There are no specifical dependencies you should worry about, since the are included with the project settings and should be downloaded automatically
+
+### Installation
+
+You clone, build and run. 
+
+## Usage
+
+This Demo does not include any argument passing to the Console application. Just run the exe file.
 
 
+## License
 
-ZA DATOTEKE KOT SO JS, CSS, Jpeg, PNG in ICO
-
-Rabm funkcijo ki vzame pravi a href url in:
-1. Naredi direktorij če ne obstaja
-2. Skopira notri Resource če ne obstajajo
-
+I used MIT license for this purposes.

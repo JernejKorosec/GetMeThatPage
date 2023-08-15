@@ -35,9 +35,6 @@ namespace GetMeThatPage.Parser.Web
         }
         internal WebScraper Scrape()
         {
-            // Todo: Scraping Functionality Refactored
-            var web = new HtmlWeb();
-            HtmlDocument? doc = web.Load(webPageUrl);
             Functions.CopyWebPageDataToDirectories(webPageUrl, savePath).Wait();
             return Instance;
         }
