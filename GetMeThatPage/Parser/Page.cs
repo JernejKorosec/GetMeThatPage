@@ -40,6 +40,11 @@
             }
         }
         public bool? IsSaved { get; set; }
+        public Page(string url, string local)
+        {
+            UrlRoot = url;
+            LocalRoot = local;
+        }
         public Page SetUrlAndLocalRoot(string url, string local)
         {
             lock (lockObject)

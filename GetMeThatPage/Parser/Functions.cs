@@ -16,7 +16,9 @@ namespace GetMeThatPage.Parser
 
             // First we create a List containing pages
             PagesList pagesList = new PagesList();
-            Page page = new Page().SetUrlAndLocalRoot(urlRoot, savepathRoot);
+            Page page = new Page(urlRoot, savepathRoot);
+
+
 
             // Tole pohendla za en html
             Dictionary<string, List<string>> linksUrls = await CopyWebPageDataToDirectories(urlRoot, savepathRoot);
