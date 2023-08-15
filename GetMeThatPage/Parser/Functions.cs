@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,8 +8,8 @@ using System.Net;
 using HtmlAgilityPack;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
-using GetMeThatPage.Parser.Resources;
 using System.Web;
+using GetMeThatPage.Resources;
 
 namespace GetMeThatPage.Parser
 {
@@ -94,7 +95,7 @@ namespace GetMeThatPage.Parser
                                         Directory.CreateDirectory(directoryPath);
                                 }
                                 // wait the task to finish, update for http 2.0 later
-                                if (!File.Exists(localResourcePath))
+                                if (!System.IO.File.Exists(localResourcePath))
                                     DownloadAndSaveFiles(webPathToSave, localResourcePath).Wait();
                             }
                         }
@@ -111,14 +112,14 @@ namespace GetMeThatPage.Parser
                 css.AbsoluteLocalPath = Path.Combine(savePath, cssRelativePath);
                 css.FileName = Path.GetFileName(cssRelativePath);
                 css.WebPageHost = url;
-                if (File.Exists(css.AbsoluteLocalPath)) GetURLPathsFromCSS(css);
+                if (System.IO.File.Exists(css.AbsoluteLocalPath)) GetURLPathsFromCSS(css);
                 CSSList.Add(css);
             }
 
             foreach (CSS css in CSSList)
             {
                 String cssFilePath = css.AbsoluteLocalPath;
-                string cssContent = File.ReadAllText(cssFilePath);
+                string cssContent = System.IO.File.ReadAllText(cssFilePath);
 
                 int countCSSResaource = css.urlResources.Count;
 
@@ -137,7 +138,7 @@ namespace GetMeThatPage.Parser
                         cssContent = cssContent.Replace(oldAString, newString);
                     }
                 }
-                File.WriteAllText(cssFilePath, cssContent);
+                System.IO.File.WriteAllText(cssFilePath, cssContent);
             }
             //Console.ReadKey();
             await Task.CompletedTask;
@@ -147,7 +148,7 @@ namespace GetMeThatPage.Parser
             css.urlResources = new List<CssUrlResource>();
             try
             {
-                string cssContent = File.ReadAllText(css.AbsoluteLocalPath);
+                string cssContent = System.IO.File.ReadAllText(css.AbsoluteLocalPath);
                 string pattern = @"url\((['""]?)(?!https?://)(?!data:)([^)]+)\1\)";
                 MatchCollection matches = Regex.Matches(cssContent, pattern);
                 foreach (Match match in matches)
@@ -182,7 +183,7 @@ namespace GetMeThatPage.Parser
                             }
                         }
                         cssUrlResource.RenamedFileAbsoluteLocalPath = NormalizeTheFileName(cssUrlResource.FileAbsoluteLocalPath);
-                        if (!File.Exists(cssUrlResource.FileAbsoluteLocalPath))
+                        if (!System.IO.File.Exists(cssUrlResource.FileAbsoluteLocalPath))
                             DownloadAndSaveFiles(cssUrlResource.FileAbsoluteRemotePath.ToString(), NormalizeTheFileName(cssUrlResource.FileAbsoluteLocalPath)).Wait();
                     }
                 }

@@ -11,4 +11,9 @@
     <PackageReference Include="HtmlAgilityPack" Version="1.11.51" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Common\" />
+    <Folder Include="Parser\Argument\" />
+  </ItemGroup>
+
 </Project>

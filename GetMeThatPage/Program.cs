@@ -1,6 +1,4 @@
-﻿using GetMeThatPage.Parser;
-using HtmlAgilityPack;
-
+﻿using GetMeThatPage.Parser.Web;
 
 namespace GetMeThatPage
 {
@@ -12,10 +10,14 @@ namespace GetMeThatPage
         static void Main(string[] args)
         {
             Console.WriteLine("Scrap, scrap, get some HTML snack...");
-            var web = new HtmlWeb();
-            HtmlDocument? doc = web.Load(webPageUrl);
-            Functions.CopyWebPageDataToDirectories(webPageUrl, savePath).Wait();
-            Console.WriteLine("Download completed!");
+
+            WebScraper w = WebScraper.Instance.                         // At this point, the save directory for web page is set
+                                                                        // and also the web address to scrape the data from.
+                SaveDirectory(AppDomain.CurrentDomain.BaseDirectory).   // Set directory to Save scraped data to
+                WebAddress("www.neobstaja.si").                         // set custom web address to traverse and scrape
+                WebAddress().                                           // reset to the default hardcoded WebAddress
+                Scrape();                                               // start scraping.
+            
             Console.ReadKey();
         }
     }

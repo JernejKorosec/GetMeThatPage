@@ -40,3 +40,11 @@ Rabm funkcijo ki vzame pravi a href url in:
 Rabim funkcijo ki naredi direktorij in skopira notri vse tudi htmlje.
  
 
+            WebScraper.Scrape();
+            WebScraper.PrintDefaultWebPage();
+            WebScraper.Scrape("www.24ur.com");
+
+            WebScraper ws = WebScraper.Instance.ChangeWebAddress("www.24ur.com");
+            ws.PrintCurrentWebPage(); 
+            ws.ChangeWebAddress("wefwef.comcomcomcomcomcomecomwecom.com");
+

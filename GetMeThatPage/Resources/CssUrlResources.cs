@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GetMeThatPage.Parser.Resources
+namespace GetMeThatPage.Resources
 {
     public class CssUrlResource
     {

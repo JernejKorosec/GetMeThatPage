@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GetMeThatPage.Parser.Resources
+namespace GetMeThatPage.Resources
 {
     public class CSS
     {
@@ -17,6 +17,6 @@ namespace GetMeThatPage.Parser.Resources
         public string WebPageHost { get; set; }
         public string FileName { get; set; }
         public List<CssUrlResource> urlResources { get; set; }
-        
+
     }
 }
