@@ -51,3 +51,8 @@ This Demo does not include any argument passing to the Console application. Just
 
 If you need any additional functionality, get in touch.
 
+## Contact
+
+[![Email](https://example.com/envelope-icon.png)](mailto:lead.razvijalec@gmail.com)
+You can reach me at [lead.razvijalec@gmail.com](mailto:lead.razvijalec@gmail.com).
+
