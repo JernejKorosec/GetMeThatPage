@@ -6,10 +6,17 @@ namespace GetMeThatPage.Parser.Web
     {
         private const String hardcodedWebPageUrl = "http://books.toscrape.com/";
         private static string hardcodedSavePath = AppDomain.CurrentDomain.BaseDirectory;
-        private String savePath;
-        private String webPageUrl;
+        private string savePath;
+        private string webPageUrl;
         private static WebScraper? _instance;
-
+        public string SavePath
+        {
+            get { return savePath; }
+        }
+        public string WebPageUrl
+        {
+            get { return webPageUrl; }
+        }
         public static WebScraper Instance
         {
             get
@@ -35,7 +42,8 @@ namespace GetMeThatPage.Parser.Web
         }
         internal WebScraper Scrape()
         {
-            Functions.CopyWebPageDataToDirectories(webPageUrl, savePath).Wait();
+            //Functions.CopyWebPageDataToDirectories(webPageUrl, savePath).Wait();
+            Functions.CopyWebPageDataToDirectories(this).Wait();
             return Instance;
         }
     }

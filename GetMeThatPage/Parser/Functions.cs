@@ -10,13 +10,19 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using System.Web;
 using GetMeThatPage.Resources;
+using GetMeThatPage.Parser.Web;
 
 namespace GetMeThatPage.Parser
 {
     public static class Functions
     {
         static readonly HttpClient client = new HttpClient();
-        public static async Task CopyWebPageDataToDirectories(string url, string savePath)
+        internal static async Task CopyWebPageDataToDirectories(WebScraper webScraper)
+        {
+            CopyWebPageDataToDirectories(webScraper.WebPageUrl, webScraper.SavePath).Wait();
+            await Task.CompletedTask;
+        }
+        private static async Task CopyWebPageDataToDirectories(string url, string savePath)
         {
             Uri absoluteUri = new Uri(url);
             var web = new HtmlWeb()
@@ -27,10 +33,7 @@ namespace GetMeThatPage.Parser
             HtmlDocument? doc = web.Load(url);
 
 
-            // Creates directories if they dont exists
-            String convertedString = Path.Combine(new Uri(url).Host, new Uri(url).AbsolutePath.TrimStart('/'));
-            savePath = Path.Combine(savePath, convertedString);
-            Directory.CreateDirectory(savePath);
+
 
             // Saves current web page to appropriate directory
             String fileName = Path.Combine(savePath, Path.GetFileName(absoluteUri.LocalPath));
@@ -41,8 +44,8 @@ namespace GetMeThatPage.Parser
                 doc.Save(fileName);
             }
             else
-            {   // Saving subpages
-                int stopmenot123 = 1;
+            {   
+                
             }
 
             // Gets all local and saveable resources (links) contained in a page from different attributes
@@ -232,5 +235,7 @@ namespace GetMeThatPage.Parser
             }
             await Task.CompletedTask;
         }
+
+      
     }
 }
