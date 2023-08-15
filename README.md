@@ -80,7 +80,9 @@ There is also a need for performance test on multiple web resources and pages.
         - Log4Net
 
 ## Probable refactoring/bugfix needed for Multithreaded solution
-No static methos and object
+- No static methos and object
+- Rethink nullable and null checking and ifs
+- Create function for multiple checking as a single call for prettier usage 
 
 ## Contact
 

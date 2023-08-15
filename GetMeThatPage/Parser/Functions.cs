@@ -13,7 +13,6 @@ namespace GetMeThatPage.Parser
             string savepathRoot = webScraper.SavePath;
             // TODO is to refactor this for traversing
 
-
             // First we create a List containing pages
             PagesList pagesList = new PagesList();
             Page page = new Page(urlRoot, savepathRoot, false);
@@ -21,7 +20,6 @@ namespace GetMeThatPage.Parser
 
             Traverse(pagesList).Wait();
             await Task.CompletedTask;
-
 
         }
 
@@ -49,42 +47,51 @@ namespace GetMeThatPage.Parser
                             {
                                 // Sets the flag that it is processed
                                 firstPage = await SinglePageSave(firstPage);
+                                int index = pagesList.Pages.IndexOf(firstPage);
+                                if (index != -1)
+                                    pagesList.Pages[index] = firstPage;
                             }
                         }
                     }
                     else if (pagesList.Pages.Count > 0)
                     {
                         //for Loop
-
                     }
                     else
                     {
                         await Task.CompletedTask;
-
                     }
-
             return pagesList;
         }
         private static async Task<Page> SinglePageSave(Page page)
         {
-            string? urlRoot = page.UrlRoot.ToString();
-            string? savepathRoot = page.LocalRoot.ToString();
-            Boolean? isSaved = page.IsSaved;
-            try
-            {
-                if (page != null && page.UrlRoot != null && page.LocalRoot != null && page.IsSaved == false)
+                string urlRoot = page.UrlRoot;
+                string savepathRoot = page.LocalRoot;
+                Boolean? isSaved = page.IsSaved;
+                try
                 {
-                    String webPageRootFolder = FileParser.createDirectoryFromUrl(savepathRoot, urlRoot);
-                    HtmlDocument? doc = WebScraper.SaveHTMLDocument(webPageRootFolder, urlRoot);
-                    Dictionary<string, List<string>> linksUrls = WebScraper.GetLinksDictionary(doc);
-                    WebScraper.SaveHTMLDocumentResources(linksUrls, urlRoot, webPageRootFolder);
-                    List<CSS> CSSFiles = WebScraper.GetCSSFiles(linksUrls, urlRoot, webPageRootFolder);
-                    WebScraper.RenameCSSResources(CSSFiles).Wait();
-                    page.IsSaved = true;
+                    if (page != null && page.UrlRoot != null && page.LocalRoot != null && page.IsSaved == false)
+                    {
+                        String webPageRootFolder = FileParser.createDirectoryFromUrl(savepathRoot, urlRoot);
+                        HtmlDocument? doc = WebScraper.SaveHTMLDocument(webPageRootFolder, urlRoot);
+                        Dictionary<string, List<string>> linksUrls = WebScraper.GetLinksDictionary(doc);
+                        WebScraper.SaveHTMLDocumentResources(linksUrls, urlRoot, webPageRootFolder);
+                        List<CSS> CSSFiles = WebScraper.GetCSSFiles(linksUrls, urlRoot, webPageRootFolder);
+                        WebScraper.RenameCSSResources(CSSFiles).Wait();
+                        page.IsSaved = true;
+                    }
                 }
-            }
-            catch (Exception ex) { } 
-            return page;
+                catch (Exception ex) { }
+                return page;
+            
         }
+        private static async Task<PagesList> AddLinksFromDocumentToPageList(Dictionary<string, List<string>> linksUrls, PagesList pagesList)
+        {
+            PagesList currentPagesList = pagesList; // reference
+
+
+            return currentPagesList;
+        }
+
     }
 }
