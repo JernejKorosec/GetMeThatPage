@@ -1,6 +1,6 @@
 ﻿# Get Me That Page
 
-A project I did for Tretton37, i had a few hours to spend :)
+A project I did I had a few hours to spend :)
 
 
 ## Table of Contents
@@ -47,7 +47,7 @@ You clone, build and run.
 
 This Demo does not include any argument passing to the Console application. Just run the exe file.
 
+## Added functionality
 
-## License
+If you need any additional functionality, get in touch.
 
-I used MIT license for this purposes.
