@@ -51,9 +51,24 @@ This Demo does not include any argument passing to the Console application. Just
 
 If you need any additional functionality, get in touch.
 
+## Next Version (Next changelog)
+
+The idea for the next version is pretty simple.
+It uses the non-Blocking idea using Queues and concurent Data
+Structures for non blocking Saving of data in the following areas,
+with the help of async methods and Tasks:
+- Saving page(HTML) to Disk
+- Saving resources to Disk
+- Getting Data from Web
+
+Anywhere where there is an option to have a concurent read or write,
+to siable the possibility of deadlock, we use lock statement,
+the function should be async and no Wait or Thread Sleep should be applied.
+
+There is also a need for performance test on multiple web resources and pages.
+
+
 ## Contact
-
-
 
 You can reach me at :email:[lead.razvijalec@gmail.com](mailto:lead.razvijalec@gmail.com)
 

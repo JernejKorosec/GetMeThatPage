@@ -16,14 +16,10 @@ namespace GetMeThatPage.Parser
             // Tole pohendla za en html
             Dictionary<string, List<string>> linksUrls = await CopyWebPageDataToDirectories(urlRoot, savepathRoot);
             List<string> listOfLinksToParse = linksUrls["a"].Distinct().ToList();
-
-
-
             await Task.CompletedTask;
         }
         private static async Task<Dictionary<string, List<string>>> CopyWebPageDataToDirectories(string urlRoot, string savepathRoot)
         {
-
             // Naredi direktorij iz podanega urlja in podane lokalne poti
             String webPageRootFolder = FileParser.createDirectoryFromUrl(savepathRoot, urlRoot);
             HtmlDocument? doc = WebScraper.SaveHTMLDocument(webPageRootFolder, urlRoot);
@@ -34,17 +30,31 @@ namespace GetMeThatPage.Parser
             return linksUrls;
         }
     }
-
-    public static class PagesList
+    public class PagesList
     {
-        public static string? urlRoot { get; set; }
-        public static string? savepathRoot { get; set; }
-        public static List<Page>? Pages { get; set; }
+        private static readonly object lockObject = new object();  // Lock object for synchronization
+        public string? UrlRoot { get; set; }
+        public string? SavepathRoot { get; set; }
+        public List<Page> Pages { get; } = new List<Page>();  // Initialize the list
+        public void AddPage(Page page)
+        {
+            lock (lockObject) // if threads try to add the page and another thread is adding it wait.
+            {
+                Pages.Add(page);
+            }
+        }
+        public void RemovePage(Page page)
+        {
+            lock (lockObject) // if threads try to remove the page and another thread is adding it wait.
+            {
+                Pages.Remove(page);
+            }
+        }
     }
     public class Page
     {
-        public static string? urlRoot { get; set; }
-        public static string? localRoot { get; set; }
-        public static bool? isSaved { get; set; }
+        public string? UrlRoot { get; set; }
+        public string? LocalRoot { get; set; }
+        public bool? IsSaved { get; set; }
     }
 }
