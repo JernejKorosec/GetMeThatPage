@@ -67,6 +67,18 @@ the function should be async and no Wait or Thread Sleep should be applied.
 
 There is also a need for performance test on multiple web resources and pages.
 
+- There also should be:
+    - Test Driven Development (Only a few of the FWs)
+        - NUnit or xUnit
+        - Moq
+        - SpecFlow
+        - XUnitRunner
+    - Proper branching (test, prod, dev, release)
+    - Proper Logging using different Loggers (Logger facade):
+        - Serilog
+        - NLog
+        - Log4Net
+
 ## Probable refactoring/bugfix needed for Multithreaded solution
 No static methos and object
 
