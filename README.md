@@ -62,7 +62,7 @@ with the help of async methods and Tasks:
 - Getting Data from Web
 
 Anywhere where there is an option to have a concurent read or write,
-to siable the possibility of deadlock, we use lock statement,
+to disable the possibility of deadlock, we use lock statement,
 the function should be async and no Wait or Thread Sleep should be applied.
 
 There is also a need for performance test on multiple web resources and pages.
