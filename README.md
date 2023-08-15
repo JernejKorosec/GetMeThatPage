@@ -28,7 +28,7 @@ There are many great features in code from Design Patterns, Future Implementatio
 - NON-Blocking (FII)
 - Async (FII)
 - MultiThreaded Scraper (FII)
-- Https 3.0 (FII)
+- Http 3.0 (FII)
 - Many more...
 
 ## Getting Started
