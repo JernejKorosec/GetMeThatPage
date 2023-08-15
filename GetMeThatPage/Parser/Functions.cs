@@ -16,8 +16,11 @@ namespace GetMeThatPage.Parser
 
             // First we create a List containing pages
             PagesList pagesList = new PagesList();
+            
+            
+            // This goes into recursive call later on            
             Page page = new Page(urlRoot, savepathRoot);
-
+            pagesList.AddPage(page);
 
 
             // Tole pohendla za en html
