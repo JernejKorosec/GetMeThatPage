@@ -67,6 +67,8 @@ the function should be async and no Wait or Thread Sleep should be applied.
 
 There is also a need for performance test on multiple web resources and pages.
 
+## Probable refactoring/bugfix needed for Multithreaded solution
+No static methos and object
 
 ## Contact
 
