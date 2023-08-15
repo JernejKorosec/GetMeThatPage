@@ -16,28 +16,75 @@ namespace GetMeThatPage.Parser
 
             // First we create a List containing pages
             PagesList pagesList = new PagesList();
-            
-            
-            // This goes into recursive call later on            
-            Page page = new Page(urlRoot, savepathRoot);
+            Page page = new Page(urlRoot, savepathRoot, false);
             pagesList.AddPage(page);
 
-
-            // Tole pohendla za en html
-            Dictionary<string, List<string>> linksUrls = await CopyWebPageDataToDirectories(urlRoot, savepathRoot);
-            List<string> listOfLinksToParse = linksUrls["a"].Distinct().ToList();
+            Traverse(pagesList).Wait();
             await Task.CompletedTask;
+
+
         }
-        private static async Task<Dictionary<string, List<string>>> CopyWebPageDataToDirectories(string urlRoot, string savepathRoot)
+
+        private static async Task<PagesList> Traverse(PagesList pagesList)
         {
-            // Naredi direktorij iz podanega urlja in podane lokalne poti
-            String webPageRootFolder = FileParser.createDirectoryFromUrl(savepathRoot, urlRoot);
-            HtmlDocument? doc = WebScraper.SaveHTMLDocument(webPageRootFolder, urlRoot);
-            Dictionary<string, List<string>> linksUrls = WebScraper.GetLinksDictionary(doc);
-            WebScraper.SaveHTMLDocumentResources(linksUrls, urlRoot, webPageRootFolder);
-            List<CSS> CSSFiles = WebScraper.GetCSSFiles(linksUrls, urlRoot, webPageRootFolder);
-            WebScraper.RenameCSSResources(CSSFiles).Wait();
-            return linksUrls;
+            /*
+             * Iterate through pagesList 
+             *      IF none do a first search and first save of first page 
+             *      on the end return list with added html pages
+             *      check the one which is saved as isSaved
+             */
+            string? urlRoot = null;
+            string? savepathRoot = null;
+
+            if (pagesList != null)
+                if (pagesList.Pages != null)
+                    if (pagesList.Pages.Count == 1)
+                    {
+                        var firstPage = pagesList.Pages.FirstOrDefault();
+                        if (firstPage != null && firstPage.IsSaved == false)
+                        {
+                            urlRoot = firstPage.UrlRoot;
+                            savepathRoot = firstPage.LocalRoot;
+                            if (urlRoot != null && savepathRoot != null)
+                            {
+                                // Sets the flag that it is processed
+                                firstPage = await SinglePageSave(firstPage);
+                            }
+                        }
+                    }
+                    else if (pagesList.Pages.Count > 0)
+                    {
+                        //for Loop
+
+                    }
+                    else
+                    {
+                        await Task.CompletedTask;
+
+                    }
+
+            return pagesList;
+        }
+        private static async Task<Page> SinglePageSave(Page page)
+        {
+            string? urlRoot = page.UrlRoot.ToString();
+            string? savepathRoot = page.LocalRoot.ToString();
+            Boolean? isSaved = page.IsSaved;
+            try
+            {
+                if (page != null && page.UrlRoot != null && page.LocalRoot != null && page.IsSaved == false)
+                {
+                    String webPageRootFolder = FileParser.createDirectoryFromUrl(savepathRoot, urlRoot);
+                    HtmlDocument? doc = WebScraper.SaveHTMLDocument(webPageRootFolder, urlRoot);
+                    Dictionary<string, List<string>> linksUrls = WebScraper.GetLinksDictionary(doc);
+                    WebScraper.SaveHTMLDocumentResources(linksUrls, urlRoot, webPageRootFolder);
+                    List<CSS> CSSFiles = WebScraper.GetCSSFiles(linksUrls, urlRoot, webPageRootFolder);
+                    WebScraper.RenameCSSResources(CSSFiles).Wait();
+                    page.IsSaved = true;
+                }
+            }
+            catch (Exception ex) { } 
+            return page;
         }
     }
 }
