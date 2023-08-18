@@ -1,12 +1,7 @@
-﻿using GetMeThatPage2.Helpers.FileSystemOperations;
-using GetMeThatPage2.Helpers.WebOperations.Url;
-using HtmlAgilityPack;
-using static GetMeThatPage2.Helpers.WebOperations.Url.UrlV2;
+﻿using HtmlAgilityPack;
 using static GetMeThatPage2.Helpers.WebOperations.WebHelpers;
-using static GetMeThatPage2.Helpers.FileSystemOperations.FileSystemHelpers;
-using System.Collections.Generic;
 using GetMeThatPage2.Helpers.WebOperations.Download;
-using System; 
+using System;
 
 namespace GetMeThatPage2
 {
@@ -22,9 +17,9 @@ namespace GetMeThatPage2
 
             HtmlDocument document = await getHTMLDocument(rootUrl);
 
-            IEnumerable<HtmlNode> imageNodes = document.DocumentNode.Descendants("img");
-            
-            new Downloader(appDirectory, rootUrl).saveHTMLDocumentImages(imageNodes).Wait();
+            HtmlNodeCollection allDescendants = document.DocumentNode.SelectNodes("//img[@src] | //script[@src] | //link[@href] | //a[@href]");
+
+            new Downloader(appDirectory, rootUrl).saveHTMLDocumentResources(allDescendants).Wait();
 
             DateTime endTime = DateTime.Now; // Record end time
 
@@ -34,21 +29,11 @@ namespace GetMeThatPage2
             Console.ReadKey();
 
             // sync blocking
-            
-            // files exists:
-            // Execution Time: 0 minutes, 0 seconds, 645 milliseconds
-            // File exists simple optimization
-            
-            // files dont exists:
-            // Execution Time: 0 minutes, 5 seconds, 492 milliseconds
+
+            // Execution Time: 0 minutes, 32 seconds, 47 milliseconds
 
             // Paralel
-            // files exists:
-
-            // files dont exists:
 
         }
-
-
     }
 }
