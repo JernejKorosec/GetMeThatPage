@@ -10,7 +10,6 @@ namespace GetMeThatPage2
         private static string rootUrl = "http://books.toscrape.com/";
         private static string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-
         static async Task Main(string[] args)
         {
             DateTime startTime = DateTime.Now; // Record start time
@@ -30,7 +29,7 @@ namespace GetMeThatPage2
 
             // sync blocking
 
-            // Execution Time: 0 minutes, 32 seconds, 47 milliseconds
+            // Execution Time: 0 minutes, 43 seconds, 189 milliseconds
 
             // Paralel
 

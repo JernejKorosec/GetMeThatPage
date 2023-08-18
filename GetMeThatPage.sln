@@ -5,7 +5,12 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GetMeThatPage", "GetMeThatPage\GetMeThatPage.csproj", "{65EE1A64-4EEE-4F75-B47A-8E852D025514}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetMeThatPage2", "GetMeThatPage2\GetMeThatPage2.csproj", "{BB4C923A-409C-4B32-9852-4EC26644490F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GetMeThatPage2", "GetMeThatPage2\GetMeThatPage2.csproj", "{BB4C923A-409C-4B32-9852-4EC26644490F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7EF59F40-B04A-458A-974B-561481645689}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

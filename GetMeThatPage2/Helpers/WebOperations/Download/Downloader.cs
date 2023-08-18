@@ -4,6 +4,8 @@ using static GetMeThatPage2.Helpers.FileSystemOperations.FileSystemHelpers;
 using System.ComponentModel.DataAnnotations;
 using static GetMeThatPage2.Helpers.WebOperations.Url.UrlStringExtensions;
 using static System.Net.Mime.MediaTypeNames;
+using System.Collections.Concurrent;
+using GetMeThatPage2.Helpers.WebOperations.Css;
 
 namespace GetMeThatPage2.Helpers.WebOperations.Download
 {
@@ -11,13 +13,13 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
     {
         private string rootUrl { get; set; }
         private string appDirectory { get; set; }
+        //private ConcurrentBag<CSS> cssFilesBag = new ConcurrentBag<CSS>();
 
         public Downloader(string _appDirectory, string _rootUrl)
         {
             rootUrl = _rootUrl;
             appDirectory = _appDirectory;
         }
-
         public async Task saveHTMLDocumentImages(IEnumerable<HtmlNode> imageNodes)
         {
             foreach (var imageNode in imageNodes)
@@ -42,14 +44,21 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
                 }
             }
         }
-
         public async Task saveHTMLDocumentResources(HtmlNodeCollection resourceNodes)
         {
-            foreach (HtmlNode? resource in resourceNodes)
-            {
-                //string fileRelativeUrl = resource.ReturnRelativePath();
+            List<string> savedResourcePath = new List<string>();
+            List<string> cssResourcePath = new List<string>();
+            // Save all resources of HTML File
+            foreach (HtmlNode? resource in resourceNodes) { 
                 SaveResource(resource.ReturnRelativePath());
+                savedResourcePath.Add(resource.ReturnRelativePath());
+                if (resource.IsCss()) cssResourcePath.Add(resource.ReturnRelativePath());
             }
+
+            // Parse all the CSS 
+            List<CSS> CSSFiles = CSS.GetCSSFiles(cssResourcePath, rootUrl, appDirectory);
+            CSS.RenameCSSResources(CSSFiles).Wait();
+
         }
         public void SaveResource(string fileRelativeUrl)
         {
@@ -67,7 +76,6 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
                     DownloadAndSaveFile(absoluteFileWebUri.AbsoluteUri, absoluteFilePath).Wait();
             }
         }
-
         public async Task saveHTMLDocumentImagesAsync(IEnumerable<HtmlNode> imageNodes)
         {
 
@@ -143,6 +151,31 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
                     }
             }
             return "";
+        }
+    }
+
+    // inside html
+    //  <link rel="stylesheet" type="text/css" href="static/oscar/css/styles.css" />
+    public static class CSSExtensions
+    {
+        public static bool IsCss(this HtmlNode node)
+        {
+            if (node == null || node.NodeType != HtmlNodeType.Element)
+                return false;
+            string nodeName = node.Name.ToLowerInvariant();
+            if (nodeName.ToLowerInvariant().Equals("link"))
+            {
+                HtmlAttribute htmlAttr = node.Attributes["href"];
+                if (htmlAttr != null)
+                    if (!htmlAttr.Value.HasSchema())
+                        return RelativePathContainsCSSFile(htmlAttr.Value);
+            }
+            return false;
+        }
+        // Optimization: proper would be to check  rel="stylesheet" type="text/css"
+        public static bool RelativePathContainsCSSFile(string path)
+        {
+            return Path.GetExtension(path).ToLower().Equals(".css");
         }
     }
 }
