@@ -34,10 +34,13 @@ namespace GetMeThatPage2
             Console.ReadKey();
 
             // sync blocking
+            
             // files exists:
-            // Execution Time: 0 minutes, 5 seconds, 480 milliseconds
+            // Execution Time: 0 minutes, 0 seconds, 645 milliseconds
+            // File exists simple optimization
+            
             // files dont exists:
-            // Execution Time: 0 minutes, 5 seconds, 672 milliseconds
+            // Execution Time: 0 minutes, 5 seconds, 492 milliseconds
 
             // Paralel
             // files exists:

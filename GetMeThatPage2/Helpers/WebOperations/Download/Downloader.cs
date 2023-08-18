@@ -34,6 +34,7 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
                         Directory.CreateDirectory(directoryPath);
                         Console.WriteLine("Directory created: " + directoryPath);
                     }
+                    if(!File.Exists(absoluteFilePath))
                     DownloadAndSaveFile(combinedUri.AbsoluteUri, absoluteFilePath).Wait();
                 }
             }
