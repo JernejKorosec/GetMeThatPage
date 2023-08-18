@@ -1,86 +1,23 @@
-﻿using GetMeThatPage.Resources;
+﻿using GetMeThatPage.Parser;
+using GetMeThatPage.Resources;
 using HtmlAgilityPack;
+using System;
+using System.Collections.Generic;
+using System.Data.SqlTypes;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
-namespace GetMeThatPage.Parser.Web
+namespace GetMeThatPage.v2.WebScraper.Parser
 {
-    public class WebScraper
+    public class Interpreter
     {
-        private const String hardcodedWebPageUrl = "http://books.toscrape.com/";
-        private static string hardcodedSavePath = AppDomain.CurrentDomain.BaseDirectory;
-        private string savePath;
-        private string webPageUrl;
-        private static WebScraper? _instance;
-        static readonly HttpClient client = new HttpClient();
-        public string SavePath
-        {
-            get { return savePath; }
-            set { savePath = value; }
-        }
-        public string WebPageUrl
-        {
-            get { return webPageUrl; }
-            set { webPageUrl = value; }
-        }
-        public static WebScraper Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = new WebScraper();
-                return _instance;
-            }
-        }
-        public WebScraper()
-        {
-            webPageUrl = hardcodedWebPageUrl;
-            savePath = hardcodedSavePath;
-        }
-        public WebScraper WebAddress(string webAddr = WebScraper.hardcodedWebPageUrl)
-        {
-            webPageUrl = webAddr;
-            return this;
-        }
-        internal WebScraper SaveDirectory(string baseDirectory)
-        {
-            savePath = baseDirectory;
-            return Instance;
-        }
-        internal WebScraper Scrape()
-        {
-            Functions.CopyWebPageDataToDirectories(this).Wait();
-            return Instance;
-        }
-        public static void Traverse()
-        {
-            // TODO
-        }
-        public static HtmlDocument? SaveHTMLDocument(String webPageRootFolder, String urlRoot)
-        {
-            Uri absoluteUri = new Uri(urlRoot);
-            HtmlWeb web = new HtmlWeb() { AutoDetectEncoding = false, OverrideEncoding = Encoding.UTF8 }; // Use the appropriate encoding 
-            HtmlDocument? doc = web.Load(urlRoot);
-            String fileName = Path.Combine(webPageRootFolder, Path.GetFileName(absoluteUri.LocalPath));
+        
 
-            // If users enters web page with realitev path as suffix
-            if (absoluteUri.LocalPath.StartsWith("/"))
-            {
-                // Saving first WebPage or other
-                fileName = Path.Combine(fileName, "index.html");
-                doc.Save(fileName);
-            }
-            else
-            {
-                // TODO: Here we parse the whole URL root:
-                // - Create folders if they dont exists
-                // - Create traversal ??
-                doc.Save(fileName);
-            }
+        #region HTML Dcoument parsing functionality (Parses html for links, a href, src) Ant stored them in dictionary
 
-            return doc;
-        }
-        internal static Dictionary<string, List<string>> GetLinksDictionary(HtmlDocument doc)
+        public static Dictionary<string, List<string>> GetLinksDictionary(HtmlDocument doc)
         {
             var linksUrls = new Dictionary<string, List<string>>
             {
@@ -91,7 +28,6 @@ namespace GetMeThatPage.Parser.Web
                 { "css", new List<string>() }
             };
             HtmlNodeCollection allNodes = doc.DocumentNode.SelectNodes("//img[@src] | //script[@src] | //link[@href] | //a[@href]");
-
             foreach (var node in allNodes)
             {
                 var srcAttribute = node.Attributes["src"];
@@ -104,24 +40,24 @@ namespace GetMeThatPage.Parser.Web
                     if (!hrefAttribute.Value.StartsWith("http://") && !hrefAttribute.Value.StartsWith("https://"))
                     {
                         linksUrls[node.Name.ToLower()].Add(hrefAttribute.Value);
-                        //if (hrefAttribute.Value.ToString().ToLower().Contains("css"))
-                        if (hrefAttribute.Value.ToString().ToLower().Contains("css"))
-                            linksUrls["css"].Add(hrefAttribute.Value);
+                        if (hrefAttribute.Value.ToString().ToLower().Contains("css")) linksUrls["css"].Add(hrefAttribute.Value);
                     }
                 }
             }
-            
-            // TODO: Removes duplicate links from list
             if (linksUrls.TryGetValue("a", out var aLinks)) linksUrls["a"] = aLinks.Distinct().ToList();
-            
             return linksUrls;
         }
-        internal static void SaveHTMLDocumentResources(Dictionary<string, List<string>> linksUrls, String urlRoot, string webPageRootFolder)
+        #endregion
+        #region Downloads resources from HTLM files (Images, js files, without css files)
+        internal static void SaveHTMLDocumentResources(Dictionary<string, List<string>> linksUrls, DataEntry dataEntry)
         {
+            String urlRoot = dataEntry.AbsoluteWebUri.ToString();
+            string webPageRootFolder = dataEntry.RootLocalPathWithRootPage;
             try
             {
                 foreach (KeyValuePair<String, List<String>> kvp in linksUrls)
                 {
+                    // GREMO CEZ CSS URL-je SAMO TO
                     List<String> resourcesList = kvp.Value;
                     if (kvp.Key.ToLower() != "css")
                         foreach (string resourceUrl in resourcesList)
@@ -137,35 +73,21 @@ namespace GetMeThatPage.Parser.Web
                                         Directory.CreateDirectory(directoryPath);
                                 }
                                 // wait the task to finish, update for http 2.0 later
-                                if (!System.IO.File.Exists(localResourcePath))
-                                    DownloadAndSaveFiles(webUri, localResourcePath).Wait();
+                                if (!File.Exists(localResourcePath))
+                                    Request.DownloadAndSaveFiles(webUri, localResourcePath).Wait();
                             }
                         }
                 }
             }
             catch (Exception ex) { }
         }
-        public static async Task DownloadAndSaveFiles(string imageUrl, String filename)
+        #endregion
+        #region CSS parsing and renaming functionality
+        internal static List<CSS> GetCSSFiles(Dictionary<string, List<string>> linksUrls, DataEntry dataEntry)
         {
-            try
-            {
-                using (HttpResponseMessage response = await client.GetAsync(imageUrl))
-                {
-                    response.EnsureSuccessStatusCode();
-                    using (Stream contentStream = await response.Content.ReadAsStreamAsync(), fileStream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
-                    {
-                        await contentStream.CopyToAsync(fileStream);
-                    }
-                }
-            }
-            catch (HttpRequestException e)
-            {
-                Console.WriteLine($"Error: {e.Message}");
-            }
-            await Task.CompletedTask;
-        }
-        internal static List<CSS> GetCSSFiles(Dictionary<string, List<string>> linksUrls, string urlRoot, string webPageRootFolder)
-        {
+            string urlRoot = dataEntry.RootLocalPathWithRootPage;
+            string webPageRootFolder = dataEntry.RootLocalPathWithRootPage;
+
             List<CSS> CSSList = new List<CSS>();
             foreach (String cssRelativePath in linksUrls["css"])
             {
@@ -175,17 +97,18 @@ namespace GetMeThatPage.Parser.Web
                 css.AbsoluteLocalPath = Path.Combine(webPageRootFolder, cssRelativePath);
                 css.FileName = Path.GetFileName(cssRelativePath);
                 css.WebPageHost = urlRoot;
-                if (System.IO.File.Exists(css.AbsoluteLocalPath)) GetURLPathsFromCSS(css);
+                if (File.Exists(css.AbsoluteLocalPath)) GetURLPathsFromCSS(css);
                 CSSList.Add(css);
             }
             return CSSList;
         }
+        // Reads urls() function from css files, reading paths to fonts and downloads them
         private static void GetURLPathsFromCSS(CSS css)
         {
             css.urlResources = new List<CssUrlResource>();
             try
             {
-                string cssContent = System.IO.File.ReadAllText(css.AbsoluteLocalPath);
+                string cssContent = File.ReadAllText(css.AbsoluteLocalPath);
                 string pattern = @"url\((['""]?)(?!https?://)(?!data:)([^)]+)\1\)";
                 MatchCollection matches = Regex.Matches(cssContent, pattern);
                 foreach (Match match in matches)
@@ -221,7 +144,7 @@ namespace GetMeThatPage.Parser.Web
                         }
                         cssUrlResource.RenamedFileAbsoluteLocalPath = NormalizeTheFileName(cssUrlResource.FileAbsoluteLocalPath);
                         if (!System.IO.File.Exists(cssUrlResource.FileAbsoluteLocalPath))
-                            WebScraper.DownloadAndSaveFiles(cssUrlResource.FileAbsoluteRemotePath.ToString(), NormalizeTheFileName(cssUrlResource.FileAbsoluteLocalPath)).Wait();
+                            Request.DownloadAndSaveFiles(cssUrlResource.FileAbsoluteRemotePath.ToString(), NormalizeTheFileName(cssUrlResource.FileAbsoluteLocalPath)).Wait();
                     }
                 }
             }
@@ -256,5 +179,76 @@ namespace GetMeThatPage.Parser.Web
             }
             await Task.CompletedTask;
         }
+        //private static PagesList AddLinksFromDocumentToPageList(Dictionary<string, List<string>> linksUrls, List<DataEntry> currEntries, DataEntry dataentry)
+        public static List<DataEntry> AddLinksFromDocumentToPageList(Dictionary<string, List<string>> linksUrls, List<DataEntry> currEntries, DataEntry dataentry)
+        {
+            Helpers.Functions func1 = new Helpers.Functions();
+            //public DataEntry getDataEntryFromUrl(Uri fullUri, String hardcodedSavePath)
+
+            
+
+            
+                
+
+            foreach (String htmlRelativePath in linksUrls["a"])
+            {
+
+                /*
+                string uriString = dataentry.Scheme + "://" + dataentry.WebHost + "/" + htmlRelativePath;
+                Uri uriPrefix = new Uri(uriString);
+                */
+                Uri uriPrefix;
+
+
+                if (htmlRelativePath.ToLower().Equals("index.html"))
+                {
+                    //uriPrefix = new Uri("/");
+                }
+                else
+                {
+                    //string filenameToRemove = "index.html";
+
+                    int lastIndex = htmlRelativePath.LastIndexOf('/');
+                    string substring = htmlRelativePath.Substring(0, lastIndex+1);
+
+                    uriPrefix = new Uri(substring);
+                    DataEntry temp = func1.getDataEntryFromUrl(uriPrefix, dataentry.RootLocalPathWithRootPage);
+                }
+                
+                int stopmenote = 1;
+            }
+
+            //uriPrefix = new Uri("catalogue/category/books_1/");
+            //System.UriFormatException: 'Invalid URI: The format of the URI could not be determined.'
+            //PagesList pagesList
+            /*
+            PagesList currentPagesList = pagesList; // reference
+
+            String currentUrlRoot = "";
+            Page firstPage;
+            if (currentPagesList != null)
+                if (currentPagesList.Pages != null)
+                    if (currentPagesList.Pages.Count == 1)
+                    {
+                        currentUrlRoot = pagesList.Pages.FirstOrDefault().UrlRoot;
+                        firstPage = pagesList.Pages.FirstOrDefault();
+                    }
+            foreach (String htmlRelativePath in linksUrls["a"])
+            {
+                if (!pagesList.ContainsPageWithUrlRoot(htmlRelativePath))
+                {
+                    Page pageWithoutLocalAddress = new Page(htmlRelativePath, false);
+                    pagesList.AddPage(pageWithoutLocalAddress);
+                }
+            }
+            int stopmenot = 0;
+            return currentPagesList;
+            */
+
+
+
+            return currEntries;
+        }
+        #endregion
     }
 }

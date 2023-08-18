@@ -1,4 +1,6 @@
-﻿namespace GetMeThatPage.Parser
+﻿using System.IO.Enumeration;
+
+namespace GetMeThatPage.Parser
 {
     public class Page
     {
@@ -44,6 +46,11 @@
         {
             UrlRoot = url;
             LocalRoot = local;
+            IsSaved = isSaved;
+        }
+        public Page(string url, bool? isSaved)
+        {
+            UrlRoot = url;
             IsSaved = isSaved;
         }
         public Page SetUrlAndLocalRoot(string url, string local)

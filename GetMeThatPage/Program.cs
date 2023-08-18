@@ -1,4 +1,5 @@
 ﻿using GetMeThatPage.Parser.Web;
+using GetMeThatPage.v2;
 
 namespace GetMeThatPage
 {
@@ -6,9 +7,9 @@ namespace GetMeThatPage
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Scrap, scrap, get some HTML snack...");
-            WebScraper.Instance.Scrape();
-            Console.ReadKey();
+            //WebScraper.Instance.Scrape();
+            MainRun mr = new MainRun();
+            mr.mainRun();
         }
     }
 }
