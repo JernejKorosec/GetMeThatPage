@@ -2,10 +2,11 @@
 using static GetMeThatPage2.Helpers.WebOperations.WebHelpers;
 using static GetMeThatPage2.Helpers.FileSystemOperations.FileSystemHelpers;
 using System.ComponentModel.DataAnnotations;
-using static GetMeThatPage2.Helpers.WebOperations.Url.UrlStringExtensions;
+using GetMeThatPage2.Helpers.WebOperations.Url;
 using static System.Net.Mime.MediaTypeNames;
 using System.Collections.Concurrent;
 using GetMeThatPage2.Helpers.WebOperations.Css;
+using System.Xml.Linq;
 
 namespace GetMeThatPage2.Helpers.WebOperations.Download
 {
@@ -14,35 +15,10 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
         private string rootUrl { get; set; }
         private string appDirectory { get; set; }
         //private ConcurrentBag<CSS> cssFilesBag = new ConcurrentBag<CSS>();
-
         public Downloader(string _appDirectory, string _rootUrl)
         {
             rootUrl = _rootUrl;
             appDirectory = _appDirectory;
-        }
-        public async Task saveHTMLDocumentImages(IEnumerable<HtmlNode> imageNodes)
-        {
-            foreach (var imageNode in imageNodes)
-            {
-                string fileRelativeUrl = imageNode.GetAttributeValue("src", "");
-
-                Uri combinedUri = getWebFileAbsolutePath(rootUrl, fileRelativeUrl);
-
-                string absoluteFilePath = getFileAbsolutePath(appDirectory, rootUrl, fileRelativeUrl);
-
-                string? directoryPath = Path.GetDirectoryName(absoluteFilePath);
-
-                if (!string.IsNullOrWhiteSpace(fileRelativeUrl) && !string.IsNullOrEmpty(directoryPath))
-                {
-                    if (!Directory.Exists(directoryPath))
-                    {
-                        Directory.CreateDirectory(directoryPath);
-                        Console.WriteLine("Directory created: " + directoryPath);
-                    }
-                    if (!File.Exists(absoluteFilePath))
-                        DownloadAndSaveFile(combinedUri.AbsoluteUri, absoluteFilePath).Wait();
-                }
-            }
         }
         public async Task saveHTMLDocumentResources(HtmlNodeCollection resourceNodes)
         {
@@ -59,6 +35,7 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
             List<CSS> CSSFiles = CSS.GetCSSFiles(cssResourcePath, rootUrl, appDirectory);
             CSS.RenameCSSResources(CSSFiles).Wait();
 
+            return;
         }
         public void SaveResource(string fileRelativeUrl)
         {
@@ -76,24 +53,65 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
                     DownloadAndSaveFile(absoluteFileWebUri.AbsoluteUri, absoluteFilePath).Wait();
             }
         }
-        public async Task saveHTMLDocumentImagesAsync(IEnumerable<HtmlNode> imageNodes)
+
+        #region added two async functions
+        public async Task saveHTMLDocumentResourcesAsync(HtmlNodeCollection resourceNodes)
         {
+            List<string> savedResourcePath = new List<string>();
+            List<string> cssResourcePath = new List<string>();
+            List<Task> resourceTasks = new List<Task>();
 
 
+            //HtmlNodeExtensions.RemoveDuplicateNodes(resourceNodes);
+            
+            HtmlNodeExtensions.RemoveDuplicateAnchorNodes(resourceNodes);
+
+
+            // Save all resources of HTML File concurrently
+            foreach (HtmlNode? resource in resourceNodes)
+            {
+                Task resourceTask = Task.Run(async () =>
+                {
+                    string relativePath = resource.ReturnRelativePath();
+                    await SaveResourceAsync(relativePath);
+                    savedResourcePath.Add(relativePath);
+                    if (resource.IsCss()) cssResourcePath.Add(relativePath);
+                });
+
+                resourceTasks.Add(resourceTask);
+            }
+
+            await Task.WhenAll(resourceTasks);
+
+            // Parse all the CSS concurrently
+            List<CSS> CSSFiles = CSS.GetCSSFiles(cssResourcePath, rootUrl, appDirectory);
+            await CSS.RenameCSSResources(CSSFiles);
         }
+        public async Task SaveResourceAsync(string fileRelativeUrl)
+        {
+            Uri absoluteFileWebUri = getWebFileAbsolutePath(rootUrl, fileRelativeUrl);
+            string absoluteFilePath = getFileAbsolutePath(appDirectory, rootUrl, fileRelativeUrl);
+            string? directoryPath = Path.GetDirectoryName(absoluteFilePath);
+
+            if (!string.IsNullOrWhiteSpace(fileRelativeUrl) && !string.IsNullOrEmpty(directoryPath))
+            {
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                    Console.WriteLine("Directory created: " + directoryPath);
+                }
+
+                if (!File.Exists(absoluteFilePath))
+                {
+                    await DownloadAndSaveFile(absoluteFileWebUri.AbsoluteUri, absoluteFilePath);
+                }
+            }
+        }
+        #endregion
     }
 
     public static class HtmlNodeExtensions
     {
-        // Todo For other pages
-        /*
-        <img>: Specifies the source URL for an image.
-        <script>: Specifies the source URL for an external script.
-        <iframe>: Specifies the source URL for an embedded frame.
-        <audio>: Specifies the source URL for an audio file.
-        <video>: Specifies the source URL for a video file.
-        <source>: Used inside <audio> or<video> to specify alternative media sources.
-        */
         public static bool IsImage(this HtmlNode node)
         {
             if (node == null || node.NodeType != HtmlNodeType.Element)
@@ -152,30 +170,50 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
             }
             return "";
         }
+        
+        //FIXME: Remove from here
+        public static void RemoveDuplicateNodes(HtmlNodeCollection nodes)
+        //public static HtmlNodeCollection RemoveDuplicateNodes(HtmlNodeCollection nodes)
+        {
+            List<HtmlNode> HtmlNodeList = nodes.ToList();
+
+            HtmlNodeList = nodes.GroupBy(node => node.OuterHtml)
+                                   .Select(group => group.First())
+                                   .ToList();
+
+
+
+            //return new HtmlNodeCollection();
+            // Create a new HtmlNodeCollection using the constructor that accepts IEnumerable<HtmlNode>
+            //return uniqueNodes;
+        }
+        public static void RemoveDuplicateAnchorNodes(HtmlNodeCollection nodes)
+        {
+            int stopmehere = 0;
+            //IEnumerable<HtmlAttribute> attributes = nodes.SelectMany(node => node.Attributes.Where(attr => attr.Name.Equals("a")));
+
+            List<bool> something = nodes.Select(node => node.Name.ToLower().Equals("a")).ToList();  
+
+            var distinctNodes = nodes.Distinct(new HtmlNodeEqualityComparer()).ToList();
+            nodes.Clear();
+            foreach (var node in distinctNodes)
+            {
+                nodes.Add(node);
+            }
+        }
+    }
+    public class HtmlNodeEqualityComparer : IEqualityComparer<HtmlNode>
+    {
+        public bool Equals(HtmlNode x, HtmlNode y)
+        {
+            if (x == null && y == null) return true;
+            if (x == null || y == null) return false;
+            return x.OuterHtml == y.OuterHtml;
+        }
+        public int GetHashCode(HtmlNode obj)
+        {
+            return obj.OuterHtml.GetHashCode();
+        }
     }
 
-    // inside html
-    //  <link rel="stylesheet" type="text/css" href="static/oscar/css/styles.css" />
-    public static class CSSExtensions
-    {
-        public static bool IsCss(this HtmlNode node)
-        {
-            if (node == null || node.NodeType != HtmlNodeType.Element)
-                return false;
-            string nodeName = node.Name.ToLowerInvariant();
-            if (nodeName.ToLowerInvariant().Equals("link"))
-            {
-                HtmlAttribute htmlAttr = node.Attributes["href"];
-                if (htmlAttr != null)
-                    if (!htmlAttr.Value.HasSchema())
-                        return RelativePathContainsCSSFile(htmlAttr.Value);
-            }
-            return false;
-        }
-        // Optimization: proper would be to check  rel="stylesheet" type="text/css"
-        public static bool RelativePathContainsCSSFile(string path)
-        {
-            return Path.GetExtension(path).ToLower().Equals(".css");
-        }
-    }
 }

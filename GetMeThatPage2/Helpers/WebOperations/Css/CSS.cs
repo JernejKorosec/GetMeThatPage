@@ -1,4 +1,5 @@
 ﻿using GetMeThatPage2.Helpers.WebOperations.Url;
+using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -119,6 +120,28 @@ namespace GetMeThatPage2.Helpers.WebOperations.Css
                 File.WriteAllText(cssFilePath, cssContent);
             }
             await Task.CompletedTask;
+        }
+    }
+    public static class CSSExtensions
+    {
+        public static bool IsCss(this HtmlNode node)
+        {
+            if (node == null || node.NodeType != HtmlNodeType.Element)
+                return false;
+            string nodeName = node.Name.ToLowerInvariant();
+            if (nodeName.ToLowerInvariant().Equals("link"))
+            {
+                HtmlAttribute htmlAttr = node.Attributes["href"];
+                if (htmlAttr != null)
+                    if (!htmlAttr.Value.HasSchema())
+                        return RelativePathContainsCSSFile(htmlAttr.Value);
+            }
+            return false;
+        }
+        // Optimization: proper would be to check  rel="stylesheet" type="text/css"
+        public static bool RelativePathContainsCSSFile(string path)
+        {
+            return Path.GetExtension(path).ToLower().Equals(".css");
         }
     }
 }
