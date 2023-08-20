@@ -17,6 +17,24 @@ A project I did I had a few hours to spend :)
 The project is a web scrapper for a specific web page, Just run the code and your page gets scrapped.
 Since it is a 3 to 6 hour project it was throughly tested only on a specific web page https://books.toscrape.com
 
+It is not for anyone possible to finish a project like this in whole or as a sensible usable part in 3 hours.
+Hence, it has only a part of functionality, not enough Iterations to find a resuable
+blocks of code to create usable design patterns.
+
+But otherwise, it builds without error, has seperated classes depending on functionality,
+no comments and for such a short time given only asynchonously downloads files on depth 2.
+
+Builds and tests were deployed and the scraping time was cut from 45 seconds
+down to under 2 seconds. There is still refactoring needed also proper naming conventions.
+
+If this was a task for 2,3 weeks including documentation, test and iterative design,
+I would probably make it an opensource project for scraping and develop it by
+all the development standards needed. Enjoy :)
+
+If you need a complete solution thats scrapes the whole page in under 10 seconds,
+let me know.
+
+
 ## Features and Futures
 
 There are many great features in code from Design Patterns, Future Implementation Ideas to Programming Principles:
@@ -37,7 +55,10 @@ You need Latest updates of Visual Studio 2022 Since the code runs and it is writ
 
 ### Prerequisites
 
-There are no specifical dependencies you should worry about, since the are included with the project settings and should be downloaded automatically
+There are no specifical dependencies you should worry about, since the are included with the project settings and should be downloaded automatically.
+Latest Visual studio 2022 is Used and HTML Agiltiy Pack Framework. No Loggers, Schedulers or other frameworks are included.
+Just download unzip open and run. A folder in executable binary folder is created with the first layer of page.
+For async Tasks to work properly with multiple nested pages, a bit more work is needed.
 
 ### Installation
 
