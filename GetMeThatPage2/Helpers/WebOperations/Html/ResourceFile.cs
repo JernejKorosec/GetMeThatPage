@@ -30,6 +30,7 @@ namespace GetMeThatPage2.Helpers.WebOperations.Html
         public string? absoluteFileDirectoryPath;
 
         public bool isSaved;
+        public bool isParsed = false;
         public static string ScrapeRoot
         {
             get
@@ -39,13 +40,6 @@ namespace GetMeThatPage2.Helpers.WebOperations.Html
                     WebRoot = WebRoot.RemoveSchema();
                 return Path.Combine(AppRoot, WebRoot); ;
             }
-            /*
-            set
-            {
-                WebRoot = value;
-                AppRoot = AppDomain.CurrentDomain.BaseDirectory;
-            }
-            */
         }
         public string Filename
         {
