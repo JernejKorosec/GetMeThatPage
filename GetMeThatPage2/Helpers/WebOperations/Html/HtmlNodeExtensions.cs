@@ -9,7 +9,6 @@ namespace GetMeThatPage2.Helpers.WebOperations.Html
 {
     public static class HtmlNodeExtensions
     {
-
         public static bool IsLink(this HtmlNode htmlNode)
         {
             if (htmlNode.Name == "link")

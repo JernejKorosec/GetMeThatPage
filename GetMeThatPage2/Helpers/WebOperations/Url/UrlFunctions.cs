@@ -13,12 +13,12 @@ namespace GetMeThatPage2.Helpers.WebOperations.Url
     }
     public class UrlFunctions
     {
-        public string ParsePageRoot { get; set; }       // Original hardcoded value
-        public string Schema { get; set; }
-        public string Host { get; set; }
-        public string Protocol { get; set; }
-        public string LocalPath { get; set; }
-        public string Filename { get; set; }
+        public string? ParsePageRoot { get; set; }       // Original hardcoded value
+        public string? Schema { get; set; }
+        public string? Host { get; set; }
+        public string? Protocol { get; set; }
+        public string? LocalPath { get; set; }
+        public string? Filename { get; set; }
         public UrlFunctions(string parsePageRoot)
         {
             ParsePageRoot = parsePageRoot;
@@ -26,15 +26,12 @@ namespace GetMeThatPage2.Helpers.WebOperations.Url
     }
     public static class UrlStringExtensions
     {
-        public static bool HasSchema(this string url) // referenca na this
+        public static bool HasSchema(this string url) 
         {
             bool startsWithSchema = false;
 
             if (string.IsNullOrEmpty(url))
                 return false;
-
-            //if (url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
-            //    url.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) return true;
 
             if (url.StartsWith(Schema.Http, StringComparison.OrdinalIgnoreCase) ||
                 url.StartsWith(Schema.Https, StringComparison.OrdinalIgnoreCase)) return true;
@@ -59,10 +56,9 @@ namespace GetMeThatPage2.Helpers.WebOperations.Url
         {
             return schema.Equals(Schema.Http) ? Schema.Http + url : Schema.Https + url;
         }
-        public static string ExtractDomain(this string url)
+        public static string? ExtractDomain(this string url)
         {
-            Uri uri;
-            if (Uri.TryCreate(url, UriKind.Absolute, out uri))
+            if (Uri.TryCreate(url, UriKind.Absolute, out Uri? uri))
             {
                 string host = uri.Host;
                 return host;
@@ -70,30 +66,18 @@ namespace GetMeThatPage2.Helpers.WebOperations.Url
 
             return null;
         }
-        /// <summary>
-        /// Gets Filename from Relative Url
-        /// </summary>
-        /// <param name="url"></param>
-        /// <returns>filename</returns>
         public static string? GetFileName(this string? url)
         {
-            
-            String? filename = null;
+
+            String? filename;
             string? result = Path.GetFileName(url);
 
-            if(result == null){
-                // path is null
+            if(result == null)
                 return null;
-
-            }
-            else if (string.IsNullOrEmpty(result)) {
-                // It is directory not file
+            else if (string.IsNullOrEmpty(result)) 
                 return String.Empty;
-            }
             else
-            {
                 filename = result;
-            }
             return filename;
         }
          /// <summary>

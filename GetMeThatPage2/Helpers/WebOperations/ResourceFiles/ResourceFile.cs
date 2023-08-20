@@ -8,35 +8,28 @@ using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GetMeThatPage2.Helpers.WebOperations.Html
+namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
 {
     public class ResourceFile
     {
-        public static String AppRoot { get; set; }
-        public static String WebRoot { get; set; }
-
-        //private static string? scrapeRoot;
-
+        public static string? AppRoot { get; set; }
+        public static string? WebRoot { get; set; }
         private string? filename;
         private string? extension;
-
         private string? relativePath;
         private string? relativeFilePath;
-
         private string? absoluteUriPath;
         private string? absoluteUriFilePath;
-
         public string? absoluteFilePath;
         public string? absoluteFileDirectoryPath;
-
         public bool isSaved;
         public bool isParsed = false;
         public static string ScrapeRoot
         {
             get
             {
-                string temp = WebRoot;
-                if(WebRoot.HasSchema())
+                //string? temp = WebRoot;
+                if (WebRoot.HasSchema())
                     WebRoot = WebRoot.RemoveSchema();
                 return Path.Combine(AppRoot, WebRoot); ;
             }
