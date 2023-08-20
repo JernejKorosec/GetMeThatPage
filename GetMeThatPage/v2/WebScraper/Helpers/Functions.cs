@@ -130,7 +130,6 @@ namespace GetMeThatPage.v2.WebScraper.Helpers
             return entry;
         }
         #endregion
-
         public String getFileNameFrompath(string path)
         {
             // checks if there is no filename in uri
@@ -138,7 +137,5 @@ namespace GetMeThatPage.v2.WebScraper.Helpers
                 return "index.html";
             return Path.GetFileName(path);
         }
-
-
     }
 }

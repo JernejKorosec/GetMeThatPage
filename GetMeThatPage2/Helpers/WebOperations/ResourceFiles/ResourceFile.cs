@@ -28,7 +28,6 @@ namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
         {
             get
             {
-                //string? temp = WebRoot;
                 if (WebRoot.HasSchema())
                     WebRoot = WebRoot.RemoveSchema();
                 return Path.Combine(AppRoot, WebRoot); ;
