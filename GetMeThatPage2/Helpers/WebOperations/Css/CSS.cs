@@ -1,12 +1,6 @@
 ﻿using GetMeThatPage2.Helpers.WebOperations.Url;
 using HtmlAgilityPack;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using static GetMeThatPage2.Helpers.WebOperations.WebHelpers;
 
 namespace GetMeThatPage2.Helpers.WebOperations.Css
 {

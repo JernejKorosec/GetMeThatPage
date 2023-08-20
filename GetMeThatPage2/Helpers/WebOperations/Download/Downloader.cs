@@ -1,12 +1,9 @@
 ﻿using HtmlAgilityPack;
 using static GetMeThatPage2.Helpers.WebOperations.WebHelpers;
 using static GetMeThatPage2.Helpers.FileSystemOperations.FileSystemHelpers;
-using System.ComponentModel.DataAnnotations;
 using GetMeThatPage2.Helpers.WebOperations.Url;
-using static System.Net.Mime.MediaTypeNames;
-using System.Collections.Concurrent;
 using GetMeThatPage2.Helpers.WebOperations.Css;
-using System.Xml.Linq;
+using GetMeThatPage2.Helpers.WebOperations.Html;
 
 namespace GetMeThatPage2.Helpers.WebOperations.Download
 {
@@ -14,48 +11,11 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
     {
         private string rootUrl { get; set; }
         private string appDirectory { get; set; }
-        //private ConcurrentBag<CSS> cssFilesBag = new ConcurrentBag<CSS>();
         public Downloader(string _appDirectory, string _rootUrl)
         {
             rootUrl = _rootUrl;
             appDirectory = _appDirectory;
         }
-        /*
-        public async Task saveHTMLDocumentResources(HtmlNodeCollection resourceNodes)
-        {
-            List<string> savedResourcePath = new List<string>();
-            List<string> cssResourcePath = new List<string>();
-            // Save all resources of HTML File
-            foreach (HtmlNode? resource in resourceNodes) { 
-                SaveResource(resource.ReturnRelativePath());
-                savedResourcePath.Add(resource.ReturnRelativePath());
-                if (resource.IsCss()) cssResourcePath.Add(resource.ReturnRelativePath());
-            }
-
-            // Parse all the CSS 
-            List<CSS> CSSFiles = CSS.GetCSSFiles(cssResourcePath, rootUrl, appDirectory);
-            CSS.RenameCSSResources(CSSFiles).Wait();
-
-            return;
-        }
-        
-        public void SaveResource(string fileRelativeUrl)
-        {
-            Uri absoluteFileWebUri = getWebFileAbsolutePath(rootUrl, fileRelativeUrl);
-            string absoluteFilePath = getFileAbsolutePath(appDirectory, rootUrl, fileRelativeUrl);
-            string? directoryPath = Path.GetDirectoryName(absoluteFilePath);
-            if (!string.IsNullOrWhiteSpace(fileRelativeUrl) && !string.IsNullOrEmpty(directoryPath))
-            {
-                if (!Directory.Exists(directoryPath))
-                {
-                    Directory.CreateDirectory(directoryPath);
-                    Console.WriteLine("Directory created: " + directoryPath);
-                }
-                if (!File.Exists(absoluteFilePath))
-                    DownloadAndSaveFile(absoluteFileWebUri.AbsoluteUri, absoluteFilePath).Wait();
-            }
-        }
-        */
         #region added two async functions
         public async Task saveHTMLDocumentResourcesAsync(HtmlNodeCollection resourceNodes)
         {
@@ -63,12 +23,7 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
             List<string> cssResourcePath = new List<string>();
             List<Task> resourceTasks = new List<Task>();
 
-
-            //HtmlNodeExtensions.RemoveDuplicateNodes(resourceNodes);
-            
             HtmlNodeExtensions.RemoveDuplicateAnchorNodes(resourceNodes);
-
-
             // Save all resources of HTML File concurrently
             foreach (HtmlNode? resource in resourceNodes)
             {
@@ -82,12 +37,10 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
 
                 resourceTasks.Add(resourceTask);
             }
-
             await Task.WhenAll(resourceTasks);
-
             // Parse all the CSS concurrently
             List<CSS> CSSFiles = CSS.GetCSSFiles(cssResourcePath, rootUrl, appDirectory);
-            await CSS.RenameCSSResources(CSSFiles);
+            await CSS.RenameCSSResources(CSSFiles); //FIXME: Collection has changed
         }
         public async Task SaveResourceAsync(string fileRelativeUrl)
         {
@@ -109,6 +62,42 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
                     await FileDownloader.DownloadAndSaveFile(absoluteFileWebUri.AbsoluteUri, absoluteFilePath);
                 }
             }
+        }
+
+        #endregion
+        
+        
+        #region added two async functions 2
+        public async Task<List<ResourceFile>> SaveAllResources(List<ResourceFile> resources)
+        {
+            List<Task<ResourceFile>> resourceTasks = new List<Task<ResourceFile>>();
+            foreach (ResourceFile resource in resources)
+            {
+                Task<ResourceFile> resourceTask = SaveSingleResource(resource);
+                resourceTasks.Add(resourceTask);
+            }
+            ResourceFile[] updatedResourcesArray = await Task.WhenAll(resourceTasks);
+            List<ResourceFile> updatedResourcesList = updatedResourcesArray.ToList();
+            return updatedResourcesList;
+        }
+        public async Task<ResourceFile> SaveSingleResource(ResourceFile resourceFile)
+        {
+            string? absoluteFilePath = resourceFile.AbsoluteFilePath;
+            string? directoryPath = Path.GetDirectoryName(absoluteFilePath);
+            string? fileRelativeUrl = resourceFile.RelativeFilePath;
+            if (!string.IsNullOrWhiteSpace(fileRelativeUrl) && !string.IsNullOrEmpty(directoryPath))
+            {
+                if (!Directory.Exists(directoryPath))
+                    Directory.CreateDirectory(directoryPath);
+                if (!File.Exists(absoluteFilePath)) {
+                    resourceFile.isSaved = await FileDownloader.DownloadAndSaveFile2(resourceFile.AbsoluteUriFilePath, absoluteFilePath);
+                }
+                else
+                {
+                    resourceFile.isSaved = true;
+                }
+            }
+            return resourceFile;
         }
         #endregion
     }
@@ -175,28 +164,17 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
         }
         
         //FIXME: Remove from here
+        
         public static void RemoveDuplicateNodes(HtmlNodeCollection nodes)
-        //public static HtmlNodeCollection RemoveDuplicateNodes(HtmlNodeCollection nodes)
         {
             List<HtmlNode> HtmlNodeList = nodes.ToList();
-
             HtmlNodeList = nodes.GroupBy(node => node.OuterHtml)
                                    .Select(group => group.First())
                                    .ToList();
-
-
-
-            //return new HtmlNodeCollection();
-            // Create a new HtmlNodeCollection using the constructor that accepts IEnumerable<HtmlNode>
-            //return uniqueNodes;
         }
         public static void RemoveDuplicateAnchorNodes(HtmlNodeCollection nodes)
         {
-            int stopmehere = 0;
-            //IEnumerable<HtmlAttribute> attributes = nodes.SelectMany(node => node.Attributes.Where(attr => attr.Name.Equals("a")));
-
             List<bool> something = nodes.Select(node => node.Name.ToLower().Equals("a")).ToList();  
-
             var distinctNodes = nodes.Distinct(new HtmlNodeEqualityComparer()).ToList();
             nodes.Clear();
             foreach (var node in distinctNodes)
@@ -218,5 +196,4 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
             return obj.OuterHtml.GetHashCode();
         }
     }
-
 }

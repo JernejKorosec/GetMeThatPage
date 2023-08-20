@@ -150,5 +150,11 @@ namespace GetMeThatPage2.Helpers.WebOperations.Url
         {
             return input.Replace("/","\\");
         }
+        public static string GetBaseUrl(string url)
+        {
+            Uri uri = new Uri(url);
+            string baseUrl = $"{uri.Scheme}://{uri.Host}/";
+            return baseUrl;
+        }
     }
 }

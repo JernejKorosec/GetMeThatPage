@@ -12,6 +12,11 @@ namespace GetMeThatPage2.Helpers.WebOperations.Html
 {
     public class ResourceFile
     {
+        public static String AppRoot { get; set; }
+        public static String WebRoot { get; set; }
+
+        //private static string? scrapeRoot;
+
         private string? filename;
         private string? extension;
 
@@ -25,7 +30,23 @@ namespace GetMeThatPage2.Helpers.WebOperations.Html
         public string? absoluteFileDirectoryPath;
 
         public bool isSaved;
-
+        public static string ScrapeRoot
+        {
+            get
+            {
+                string temp = WebRoot;
+                if(WebRoot.HasSchema())
+                    WebRoot = WebRoot.RemoveSchema();
+                return Path.Combine(AppRoot, WebRoot); ;
+            }
+            /*
+            set
+            {
+                WebRoot = value;
+                AppRoot = AppDomain.CurrentDomain.BaseDirectory;
+            }
+            */
+        }
         public string Filename
         {
             get

@@ -5,7 +5,7 @@ namespace GetMeThatPage2.Helpers.WebOperations
 {
     public class WebHelpers
     {
-        public static async Task<HtmlDocument> getHTMLDocument(string url)
+        public static async Task<HtmlDocument> DownloadHTMLDocument(string url)
         {
             HtmlDocument htmlDoc = new HtmlDocument();
             Encoding utf8Encoding = Encoding.UTF8;
@@ -27,27 +27,7 @@ namespace GetMeThatPage2.Helpers.WebOperations
             }
             return htmlDoc;
         }
-        public static async Task DownloadAndSaveFileOLD2(string fileUrl, String filename)
-        {
-            try
-            {
-                using (HttpResponseMessage response = await new HttpClient().GetAsync(fileUrl))
-                {
-                    response.EnsureSuccessStatusCode();
-                    using (Stream contentStream = await response.Content.ReadAsStreamAsync(), 
-                        fileStream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
-                    {
-                        await contentStream.CopyToAsync(fileStream);
-                    }
-                    Console.WriteLine("Downloaded and saved: " + fileUrl);
-                }
-            }
-            catch (HttpRequestException e)
-            {
-                Console.WriteLine($"Error: {e.Message}");
-            }
-            await Task.CompletedTask;
-        }
+
         public static Uri getWebFileAbsolutePath(string rootUrl, String fileRelativeUrl)
         {
             Uri rootUri = new Uri(rootUrl);
@@ -58,7 +38,6 @@ namespace GetMeThatPage2.Helpers.WebOperations
     public static class FileDownloader
     {
         private static readonly SemaphoreSlim _fileLock = new SemaphoreSlim(1, 1);
-
         public static async Task DownloadAndSaveFile(string fileUrl, string filename)
         {
             try
@@ -87,6 +66,39 @@ namespace GetMeThatPage2.Helpers.WebOperations
             catch (HttpRequestException e)
             {
                 Console.WriteLine($"Error: {e.Message}");
+            }
+        }
+
+        public static async Task<Boolean> DownloadAndSaveFile2(string fileUrl, string filename)
+        {
+            try
+            {
+                using (var response = await new HttpClient().GetAsync(fileUrl))
+                {
+                    response.EnsureSuccessStatusCode();
+
+                    await _fileLock.WaitAsync(); // Acquire the lock before accessing the file
+                    try
+                    {
+                        using (var contentStream = await response.Content.ReadAsStreamAsync())
+                        using (var fileStream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
+                        {
+                            await contentStream.CopyToAsync(fileStream);
+                        }
+                    }
+                    finally
+                    {
+                        _fileLock.Release(); // Release the lock after accessing the file
+                    }
+
+                    Console.WriteLine("Downloaded and saved: " + fileUrl);
+                    return true; // Return true indicating success
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine($"Error: {e.Message}");
+                return false; // Return false indicating failure
             }
         }
     }
