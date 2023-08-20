@@ -38,7 +38,7 @@ namespace GetMeThatPage2.Helpers.WebOperations.Css
             }
             return CSSList;
         }
-        public static void GetURLPathsFromCSS(CSS css)
+        public static async Task GetURLPathsFromCSS(CSS css)
         {
             css.urlResources = new List<CssUrlResource>();
             try
@@ -78,7 +78,7 @@ namespace GetMeThatPage2.Helpers.WebOperations.Css
                         }
                         cssUrlResource.RenamedFileAbsoluteLocalPath = NormalizeTheFileName(cssUrlResource.FileAbsoluteLocalPath);
                         if (!File.Exists(cssUrlResource.FileAbsoluteLocalPath))
-                            DownloadAndSaveFile(cssUrlResource.FileAbsoluteRemotePath.ToString(), NormalizeTheFileName(cssUrlResource.FileAbsoluteLocalPath)).Wait();
+                            await FileDownloader.DownloadAndSaveFile(cssUrlResource.FileAbsoluteRemotePath.ToString(), NormalizeTheFileName(cssUrlResource.FileAbsoluteLocalPath));
                     }
                 }
             }

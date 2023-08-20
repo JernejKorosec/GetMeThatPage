@@ -27,7 +27,7 @@ namespace GetMeThatPage2.Helpers.WebOperations
             }
             return htmlDoc;
         }
-        public static async Task DownloadAndSaveFile(string fileUrl, String filename)
+        public static async Task DownloadAndSaveFileOLD2(string fileUrl, String filename)
         {
             try
             {
@@ -53,6 +53,41 @@ namespace GetMeThatPage2.Helpers.WebOperations
             Uri rootUri = new Uri(rootUrl);
             Uri relativeUri = new Uri(fileRelativeUrl, UriKind.Relative);
             return new Uri(rootUri, relativeUri);
+        }
+    }
+    public static class FileDownloader
+    {
+        private static readonly SemaphoreSlim _fileLock = new SemaphoreSlim(1, 1);
+
+        public static async Task DownloadAndSaveFile(string fileUrl, string filename)
+        {
+            try
+            {
+                using (var response = await new HttpClient().GetAsync(fileUrl))
+                {
+                    response.EnsureSuccessStatusCode();
+
+                    await _fileLock.WaitAsync(); // Acquire the lock before accessing the file
+                    try
+                    {
+                        using (var contentStream = await response.Content.ReadAsStreamAsync())
+                        using (var fileStream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
+                        {
+                            await contentStream.CopyToAsync(fileStream);
+                        }
+                    }
+                    finally
+                    {
+                        _fileLock.Release(); // Release the lock after accessing the file
+                    }
+
+                    Console.WriteLine("Downloaded and saved: " + fileUrl);
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine($"Error: {e.Message}");
+            }
         }
     }
 }

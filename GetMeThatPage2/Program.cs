@@ -17,8 +17,6 @@ namespace GetMeThatPage2
             DateTime startTime = DateTime.Now; // Record start time
             List<ResourceFile> resources = new List<ResourceFile>();
 
-
-
             HtmlDocument document = await getHTMLDocument(rootUrl);
             HtmlNodeCollection allDescendants = document.DocumentNode.SelectNodes("//img[@src] | //script[@src] | //link[@href] | //a[@href]");
             List<HtmlNode> htmlNodeList = allDescendants.ToList();

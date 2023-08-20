@@ -20,6 +20,7 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
             rootUrl = _rootUrl;
             appDirectory = _appDirectory;
         }
+        /*
         public async Task saveHTMLDocumentResources(HtmlNodeCollection resourceNodes)
         {
             List<string> savedResourcePath = new List<string>();
@@ -37,6 +38,7 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
 
             return;
         }
+        
         public void SaveResource(string fileRelativeUrl)
         {
             Uri absoluteFileWebUri = getWebFileAbsolutePath(rootUrl, fileRelativeUrl);
@@ -53,7 +55,7 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
                     DownloadAndSaveFile(absoluteFileWebUri.AbsoluteUri, absoluteFilePath).Wait();
             }
         }
-
+        */
         #region added two async functions
         public async Task saveHTMLDocumentResourcesAsync(HtmlNodeCollection resourceNodes)
         {
@@ -103,7 +105,8 @@ namespace GetMeThatPage2.Helpers.WebOperations.Download
 
                 if (!File.Exists(absoluteFilePath))
                 {
-                    await DownloadAndSaveFile(absoluteFileWebUri.AbsoluteUri, absoluteFilePath);
+                    //await DownloadAndSaveFile(absoluteFileWebUri.AbsoluteUri, absoluteFilePath);
+                    await FileDownloader.DownloadAndSaveFile(absoluteFileWebUri.AbsoluteUri, absoluteFilePath);
                 }
             }
         }
