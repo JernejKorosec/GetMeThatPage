@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,7 +22,10 @@ namespace GetMeThatPage2.Helpers.WebOperations.Html
         private string? absoluteUriFilePath;
 
         public string? absoluteFilePath;
-        public string? absoluteFileDirectoryPath; 
+        public string? absoluteFileDirectoryPath;
+
+        public bool isSaved;
+
         public string Filename
         {
             get
@@ -118,11 +122,19 @@ namespace GetMeThatPage2.Helpers.WebOperations.Html
             }
             set { absoluteFileDirectoryPath = value; }
         }
+        public bool IsSaved
+        {
+            get
+            {
+                return isSaved;
+            }
+            set { isSaved = value; }
+        }
         public ResourceFile(string path)
         {
             relativeFilePath = path;
         }
-        public ResourceFile(HtmlNode? htmlNode, string? baseUriString = null, string ? appRoot = null)
+        public ResourceFile(HtmlNode? htmlNode, string? baseUriString = null, string? appRoot = null)
         {
             if (htmlNode != null)
             {
@@ -151,11 +163,29 @@ namespace GetMeThatPage2.Helpers.WebOperations.Html
 
                     //absoluteFilePath
                     //absoluteFileDirectoryPath
-                    if (appRoot != null) {
+                    if (appRoot != null)
+                    {
                         absoluteFilePath = Path.Combine(appRoot, absoluteUriFilePathWithoutSchema);
                         absoluteFileDirectoryPath = Path.GetDirectoryName(absoluteFilePath);
                     }
                 }
+            }
+        }
+    }
+    public static class ResourceFileExtensions
+    {
+        private static readonly object _lock = new object();
+        public static List<ResourceFile> RemoveDuplicateValues(this List<ResourceFile> resources)
+        {
+            lock (_lock)
+            {
+                // Remove duplicates
+                List<ResourceFile> uniqueResources = resources
+                    .GroupBy(resource => resource.absoluteFilePath)
+                    .Select(group => group.First())
+                    .ToList();
+
+                return uniqueResources;
             }
         }
     }
