@@ -25,14 +25,14 @@ namespace GetMeThatPage2
             ResourceFile.AppRoot = appDirectory;
 
 
-            /*
+            
             await GetHTMLLinks(rootUrl, resources);                             // Dobi vse linke od spletne strani in jih shrani v listo
             Downloader downloader = new Downloader(appDirectory, rootUrl);      // Nastavi začetno pot za download in spletno stran s katere downloada
             resources = await downloader.SaveAllResources(resources);           // shrani s spleta vse linke ki so v listi na disk
             resources = await GetCSSLinksAsync(resources);                      // odpre cssje in shrani vse linke iz cssja
-            */
+            
 
-            DoRecursionAsync(resources);
+            //DoRecursionAsync(resources);
 
             TimeSpan executionTime = DateTime.Now - startTime; // Record end time
             Console.WriteLine($"Execution Time: {(int)executionTime.TotalMinutes} minutes, {(int)executionTime.Seconds} seconds, {executionTime.Milliseconds} milliseconds");
