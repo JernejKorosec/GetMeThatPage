@@ -1,4 +1,4 @@
-﻿using GetMeThatPage2.Helpers.WebOperations.Url;
+﻿using GetMeThatPage3.Helpers.Url.Extensions;
 using HtmlAgilityPack;
 
 namespace GetMeThatPage3.Helpers.Css.Extensions

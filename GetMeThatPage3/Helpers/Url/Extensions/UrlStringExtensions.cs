@@ -1,19 +1,11 @@
-﻿using HtmlAgilityPack;
-using System.IO;
-using System.Xml.Linq;
+﻿using GetMeThatPage3.Helpers.Url;
+using HtmlAgilityPack;
 
-namespace GetMeThatPage2.Helpers.WebOperations.Url
+namespace GetMeThatPage3.Helpers.Url.Extensions
 {
-    // C#'s expression-bodied property syntax
-    // Read only properties
-    public class Schema
-    {
-        public static string Http => "http://";
-        public static string Https => "https://";
-    }
     public static class UrlStringExtensions
     {
-        public static bool HasSchema(this string url) 
+        public static bool HasSchema(this string url)
         {
             bool startsWithSchema = false;
 
@@ -56,24 +48,17 @@ namespace GetMeThatPage2.Helpers.WebOperations.Url
         public static string? GetFileName(this string? url)
         {
 
-            String? filename;
+            string? filename;
             string? result = Path.GetFileName(url);
 
-            if(result == null)
+            if (result == null)
                 return null;
-            else if (string.IsNullOrEmpty(result)) 
-                return String.Empty;
+            else if (string.IsNullOrEmpty(result))
+                return string.Empty;
             else
                 filename = result;
             return filename;
         }
-         /// <summary>
-         /// Get Filename Extension from path
-         /// </summary>
-         /// <param name="path">url path</param>
-         /// <returns> - extension if path is valid 
-         /// null if path is null , 
-         /// Empty String if path doesnt have extension</returns>
         public static string? GetExtensionFromFilename(this string? path)
         {
             string? extension = Path.GetExtension(path);
@@ -85,7 +70,7 @@ namespace GetMeThatPage2.Helpers.WebOperations.Url
             else if (string.IsNullOrEmpty(extension))
             {
                 // path doesnt have extension
-                return String.Empty;
+                return string.Empty;
             }
             return extension;
         }
@@ -95,16 +80,16 @@ namespace GetMeThatPage2.Helpers.WebOperations.Url
 
             switch (htmlNode.Name)
             {
-                case ("a"):
+                case "a":
                     path = htmlNode.Attributes["href"].Value;
                     break;
-                case ("link"):
+                case "link":
                     path = htmlNode.Attributes["href"].Value;
                     break;
-                case ("img"):
+                case "img":
                     path = htmlNode.Attributes["src"].Value;
                     break;
-                case ("script"):
+                case "script":
                     path = htmlNode.Attributes["src"].Value;
                     break;
 
@@ -119,7 +104,7 @@ namespace GetMeThatPage2.Helpers.WebOperations.Url
         }
         public static string ReplaceForwardslashesWithBackslashes(this string input)
         {
-            return input.Replace("/","\\");
+            return input.Replace("/", "\\");
         }
         public static string GetBaseUrl(string url)
         {
