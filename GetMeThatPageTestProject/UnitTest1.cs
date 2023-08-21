@@ -47,13 +47,11 @@ namespace GetMeThatPageTestProject
             var web = new HtmlWeb();
             var doc = web.Load(url);
             HtmlNodeCollection scriptElements = doc.DocumentNode.SelectNodes("//script");
-
             foreach (HtmlNode scriptElement in scriptElements)
             {
                 bool isScriptElement = scriptElement.IsScript();
-                Assert.Equals(scriptElement, isScriptElement);
+                Assert.That(isScriptElement, Is.EqualTo(true));
             }
-
             Assert.Pass();
         }
     }
