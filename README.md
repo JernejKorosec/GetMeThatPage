@@ -1,7 +1,7 @@
 ﻿# Get Me That Page
 
 A project I did I had a few hours to spend :)
-
+Once finished, it will be rewritten as a framework for page scraping
 
 ## Table of Contents
 
@@ -15,21 +15,7 @@ A project I did I had a few hours to spend :)
 ## Introduction
 
 The project is a web scrapper for a specific web page, Just run the code and your page gets scrapped.
-Since it is a 3 to 6 hour project it was throughly tested only on a specific web page https://books.toscrape.com
-
-It is not for anyone possible to finish a project like this in whole or as a sensible usable part in 3 hours.
-Hence, it has only a part of functionality, not enough Iterations to find a resuable
-blocks of code to create usable design patterns.
-
-But otherwise, it builds without error, has seperated classes depending on functionality,
-no comments and for such a short time given only asynchonously downloads files on depth 2.
-
-Builds and tests were deployed and the scraping time was cut from 45 seconds
-down to under 2 seconds. There is still refactoring needed also proper naming conventions.
-
-If this was a task for 2,3 weeks including documentation, test and iterative design,
-I would probably make it an opensource project for scraping and develop it by
-all the development standards needed. Enjoy :)
+It was throughly tested only on a specific web page https://books.toscrape.com
 
 If you need a complete solution thats scrapes the whole page in under 10 seconds,
 let me know.
@@ -101,9 +87,7 @@ There is also a need for performance test on multiple web resources and pages.
         - Log4Net
 
 ## Probable refactoring/bugfix needed for Multithreaded solution
-- No static methos and object
-- Rethink nullable and null checking and ifs
-- Create function for multiple checking as a single call for prettier usage 
+- None for now
 
 ## Contact
 
