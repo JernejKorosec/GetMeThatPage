@@ -1,5 +1,5 @@
 using GetMeThatPage3.Helpers;
-using GetMeThatPage3.Helpers.Html;
+using GetMeThatPage3.Helpers.Html.Extensions;
 using GetMeThatPageTestProject.Address;
 using HtmlAgilityPack;
 

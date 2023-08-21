@@ -1,11 +1,6 @@
 ﻿using HtmlAgilityPack;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace GetMeThatPage3.Helpers.Html
+namespace GetMeThatPage3.Helpers.Html.Extensions
 {
     public static class HtmlNodeExtensions
     {
@@ -45,9 +40,9 @@ namespace GetMeThatPage3.Helpers.Html
                 return true;
             return false;
         }
-        public static String? GetHTMLNodeAttributeValue(this HtmlNode htmlNode)
+        public static string? GetHTMLNodeAttributeValue(this HtmlNode htmlNode)
         {
-            String? url = null;
+            string? url = null;
             if (htmlNode.HasHrefAttribute())
             {
                 url = htmlNode.Attributes["href"].Value;
