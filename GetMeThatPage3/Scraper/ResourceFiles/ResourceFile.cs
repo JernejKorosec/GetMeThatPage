@@ -15,7 +15,10 @@ namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
     public class ResourceFile
     {
         private string url;
-
+        public string Url
+        {
+            get { return url; }
+        }
         public ResourceFile(string url)
         {
             this.url = url;

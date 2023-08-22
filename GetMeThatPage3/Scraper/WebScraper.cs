@@ -29,8 +29,8 @@ namespace GetMeThatPage3.Scraper
                 ResourceFile.AppRoot = _appRoot;
                 url = ResourceFile.WebRoot;
             }
-            SaveResource(GetNextResource(url));  
-            //if (AreAllPagesVisited(url)) return;
+            bool allDone = SaveResource(GetNextResource(url));
+            if (allDone) return;
             if (Pagecount>2) return; // Hard return
             else Pagecount++;
 
@@ -66,16 +66,38 @@ namespace GetMeThatPage3.Scraper
             }
             return resource;
         }
-        private WebScraper SaveResource(ResourceFile resourceFile)
+        private bool SaveResource(ResourceFile resourceFile)
         {
-            //TODO: implementation
-            return this;
-        }
-        private bool AreAllPagesVisited(string url)
-        {
-
-            if (string.IsNullOrEmpty(url)) return true;
-            return false;
+            // Try to get Resource from dictionary
+            if (resources.TryGetValue(resourceFile.Url, out ResourceFile? savedResource))
+            {
+                if (savedResource.State.IsSaved)
+                    return true;
+                else
+                {
+                    //TODO: Download Resource
+                    //TODO: Save Resource
+                    //TODO: Set proper boolean values
+                    //TODO: Replace The ResourceFile in dictionary
+                    return false; //FIXME: When TODO done
+                }
+            }
+            else
+            {
+                //TODO: Download Resource
+                //TODO: Save Resource
+                //TODO: Set proper boolean values
+                //TODO: Replace The ResourceFile in dictionary
+                if(resources.TryAdd(resourceFile.Url, resourceFile))
+                {
+                    // Added successfully
+                    return true;
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
         }
     }
 }
