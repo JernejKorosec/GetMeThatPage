@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using static System.Net.Mime.MediaTypeNames;
+using System.Runtime.CompilerServices;
 
 namespace GetMeThatPage3.Scraper
 {
@@ -17,24 +18,24 @@ namespace GetMeThatPage3.Scraper
             _webPageUrl = webPageUrl;
             _appRoot = appRoot;
         }
-        //private ConcurrentDictionary<string, ResourceFile> dictionary = new ConcurrentDictionary<string, ResourceFile>();
+        private ConcurrentDictionary<string, ResourceFile> resources = new ConcurrentDictionary<string, ResourceFile>();
         private ConcurrentDictionary<string, string> dictionary = new ConcurrentDictionary<string, string>();
         public async Task Run(int Pagecount=0)
         {
-            string url = "";
+            string? url = "";
             // First run
             if(Pagecount == 0) {
                 ResourceFile.WebRoot = _webPageUrl;
                 ResourceFile.AppRoot = _appRoot;
+                url = ResourceFile.WebRoot;
             }
-            url = CopyResource(url).GetNextUrl(); // Copies url resource localy and gets next url from dictionary
-            
+            SaveResource(GetNextUrl(url));  
 
-            if (AreAllPagesVisited(url)) return;
+
+            //if (AreAllPagesVisited(url)) return;
             if (Pagecount>2) return; // Hard return
-            Pagecount++;
+            else Pagecount++;
 
-            await executeRunAsync();
             await Run(Pagecount);
         }
 
@@ -61,20 +62,46 @@ namespace GetMeThatPage3.Scraper
             // Wait for all read tasks to complete
             await Task.WhenAll(readTasks);
         }
-        private string GetNextUrl()
+        private string GetNextUrl(string? url)
         {
+            string? nextUrl="";
 
             // TODO: Implementation
-            // Pogleda v listo in skuša dobiti naslednji url
-            return "";
+            return nextUrl;
         }
-        private WebScraper CopyResource(string url)
+        private WebScraper SaveResource(string url)
         {
+            ResourceFile resource = new ResourceFile(url);
+
+            // Try to get Resource from dictionary
+            if (resources.TryGetValue(url, out var value))
+            {
+                if (!resource.State.IsSaved)
+                {
+                    Console.WriteLine($"Resource exists, not saved, saving: {url} - {value}");
+                    // Call function to download, and save
+                    // Sets the proper flags
+                }
+                else
+                {
+                    Console.WriteLine($"Resource exists, saved, returning: {url} - {value}");
+                    return this;
+                }
+            }
+            else
+            {
+                // If not found create new resource
+                // Copy Resource
+                // Save it to Dictionary as Done
+                resources.TryAdd(url, new ResourceFile(url));
+                Console.WriteLine($"Resource not found, saving, adding to resources, returning: {url}");
+            }
             //TODO: implementation
             return this;
         }
         private bool AreAllPagesVisited(string url)
         {
+
             if (string.IsNullOrEmpty(url)) return true;
             return false;
         }
