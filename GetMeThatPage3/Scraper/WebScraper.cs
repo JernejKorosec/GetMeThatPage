@@ -1,6 +1,9 @@
 ﻿using GetMeThatPage2.Helpers.WebOperations.ResourceFiles;
+using System.Collections;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace GetMeThatPage3.Scraper
 {
@@ -16,18 +19,21 @@ namespace GetMeThatPage3.Scraper
         }
         //private ConcurrentDictionary<string, ResourceFile> dictionary = new ConcurrentDictionary<string, ResourceFile>();
         private ConcurrentDictionary<string, string> dictionary = new ConcurrentDictionary<string, string>();
-        
-        
         public async Task Run(int Pagecount=0)
         {
-
+            string url = "";
             // First run
             if(Pagecount == 0) {
                 ResourceFile.WebRoot = _webPageUrl;
                 ResourceFile.AppRoot = _appRoot;
             }
+            url = CopyResource(url); // Copies url resource and gets next url from dictionary
+            
+
+            if (AreAllPagesVisited()) return;
+            if (Pagecount>2) return; // Hard return
             Pagecount++;
-            if(Pagecount>2) return; // Hard return
+
             await Run(Pagecount);
 
 
@@ -53,6 +59,19 @@ namespace GetMeThatPage3.Scraper
             // Wait for all read tasks to complete
             await Task.WhenAll(readTasks);
         }
+
+        private string CopyResource(string url)
+        {
+            //TODO: implementation
+            return "";
+        }
+
+        private bool AreAllPagesVisited()
+        {
+            //TODO: implementation
+            return false;
+        }
+
         private async Task AddToDictionaryAsync(string key, string value)
         {
             await Task.Delay(TimeSpan.FromMilliseconds(100)); // Simulating asynchronous work
