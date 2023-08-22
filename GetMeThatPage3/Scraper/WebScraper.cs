@@ -59,6 +59,7 @@ namespace GetMeThatPage3.Scraper
             }
             else
             {
+                // Obivously, first run of the recursive iteration
                 resource = new ResourceFile(url);
                 resources.TryAdd(url, resource);
                 Console.WriteLine($"Resource not found, saving, adding to resources, returning: {url}");
