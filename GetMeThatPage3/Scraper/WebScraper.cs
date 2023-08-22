@@ -58,12 +58,14 @@ namespace GetMeThatPage3.Scraper
             }
             else
             {
+                Console.WriteLine($"Resource not found, saving, adding to resources, returning: {url}");
                 // Obivously, first run of the recursive iteration
                 resource = new ResourceFile(url);
-                resources.TryAdd(url, resource);
-                Console.WriteLine($"Resource not found, saving, adding to resources, returning: {url}");
+                if(resources.TryAdd(url, resource))
+                    return resource;
+                else
+                    throw new Exception();
             }
-            return resource;
         }
         private bool SaveResource(ResourceFile resourceFile)
         {
@@ -78,7 +80,8 @@ namespace GetMeThatPage3.Scraper
                     //TODO: Save Resource
                     //TODO: Set proper boolean values
                     //TODO: Replace The ResourceFile in dictionary
-                    return false; //FIXME: When TODO done
+                    savedResource.State.IsSaved = true;
+                    return true; ; //FIXME: When TODO done
                 }
             }
             else
