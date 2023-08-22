@@ -70,17 +70,15 @@ namespace GetMeThatPage3.Scraper
         private bool SaveResource(ResourceFile resourceFile)
         {
             // Try to get Resource from dictionary
+            // TODO: Check all the null values in code
             if (resources.TryGetValue(resourceFile.Url, out ResourceFile? savedResource))
             {
                 if (savedResource.State.IsSaved)
                     return true;
                 else
                 {
-                    //TODO: Download Resource
-                    //TODO: Save Resource
-                    //TODO: Set proper boolean values
-                    //TODO: Replace The ResourceFile in dictionary
-                    savedResource.State.IsSaved = true;
+                    savedResource = DownLoadAndSave(savedResource);
+                    //TODO: Check if resource in dictionaty changes(Look Line up)
                     return true; ; //FIXME: When TODO done
                 }
             }
@@ -100,6 +98,16 @@ namespace GetMeThatPage3.Scraper
                     throw new Exception();
                 }
             }
+        }
+
+        private ResourceFile DownLoadAndSave(ResourceFile savedResource)
+        {
+            //TODO: Check if it is saved, but first if exists on disk
+            //TODO: Download Resource
+            //TODO: Save Resource
+            //TODO: Set proper boolean values
+            savedResource.State.IsSaved = true;
+            return savedResource;
         }
     }
 }
