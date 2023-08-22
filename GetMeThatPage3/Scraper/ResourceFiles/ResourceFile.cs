@@ -1,6 +1,4 @@
-﻿using static GetMeThatPage3.Scraper.ResourceFiles.FilePath;
-using HtmlAgilityPack;
-using GetMeThatPage3.Scraper.ResourceFiles;
+﻿using GetMeThatPage3.Scraper.ResourceFiles;
 using GetMeThatPage3.Helpers.State;
 
 namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
