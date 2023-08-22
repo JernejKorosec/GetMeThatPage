@@ -10,7 +10,7 @@ namespace GetMeThatPage3
         static async Task Main(string[] args)
         {
             WebScraper spider = new WebScraper(rootUrl,appDirectory);
-            await spider.RunExampleAsync();
+            await spider.Run();
             Console.ReadKey();
         }
     }

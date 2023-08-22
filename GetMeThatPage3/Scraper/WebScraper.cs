@@ -8,6 +8,7 @@ namespace GetMeThatPage3.Scraper
     {
         private readonly string? _webPageUrl;
         private readonly string? _appRoot;
+        
         public WebScraper(string? webPageUrl, string? appRoot)
         {
             _webPageUrl = webPageUrl;
@@ -15,8 +16,21 @@ namespace GetMeThatPage3.Scraper
         }
         //private ConcurrentDictionary<string, ResourceFile> dictionary = new ConcurrentDictionary<string, ResourceFile>();
         private ConcurrentDictionary<string, string> dictionary = new ConcurrentDictionary<string, string>();
-        public async Task RunExampleAsync()
+        
+        
+        public async Task Run(int Pagecount=0)
         {
+
+            // First run
+            if(Pagecount == 0) {
+                ResourceFile.WebRoot = _webPageUrl;
+                ResourceFile.AppRoot = _appRoot;
+            }
+            Pagecount++;
+            if(Pagecount>2) return; // Hard return
+            await Run(Pagecount);
+
+
             // Create a pool of 3 threads for adding to the ConcurrentDictionary asynchronously
             Task[]? addTasks = new Task[3];
             for (int i = 0; i < addTasks.Length; i++)
