@@ -16,8 +16,8 @@ namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
     /// </summary>
     public class ResourceFile
     {
-        public string? AppRoot { get; set; }  // c:\some\where\
-        public string? WebRoot { get; set; } // http://books.toscrape.com
+        public static string? AppRoot { get; set; }  // c:\some\where\
+        public static string? WebRoot { get; set; } // http://books.toscrape.com
         public FilePath? Remote { get; set; }
         public FilePath? Local { get; set; }
         public State? State { get; set; }
