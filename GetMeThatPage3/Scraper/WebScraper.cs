@@ -13,7 +13,8 @@ namespace GetMeThatPage3.Scraper
             _webPageUrl = webPageUrl;
             _appRoot = appRoot;
         }
-        private ConcurrentDictionary<string, ResourceFile> dictionary = new ConcurrentDictionary<string, ResourceFile>();
+        //private ConcurrentDictionary<string, ResourceFile> dictionary = new ConcurrentDictionary<string, ResourceFile>();
+        private ConcurrentDictionary<string, string> dictionary = new ConcurrentDictionary<string, string>();
         public async Task RunExampleAsync()
         {
             // Create a pool of 3 threads for adding to the ConcurrentDictionary asynchronously
