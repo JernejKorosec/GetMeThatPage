@@ -8,7 +8,7 @@
      /// File     if prepended
      /// Dir     if path is a directory
      /// </summary>
-    public class FilePath
+    public abstract class FilePath
     {
         private string? filename;
         private string? extension;
@@ -33,6 +33,12 @@
             set { extension = value; }
         }
         public string? RelativePath { get; set; }      // oscar/kilo/
-        public string? AbsolutePath { get; set; }     // oscar/kilo/index.html
+        public string? AbsolutePath { get; set; }     // oscar/kilo/index.html or
+                                                      // c:\somewhere\books.toscrape.com\oscar\kilo\index.html
+        public abstract bool EndsWithFileName(string filepath);
+        public  string AddIndexHtmlToUrl(string filepath)
+        {
+            return filepath.EndsWith("/") || filepath.EndsWith(@"\") ? filepath + "index.html" : filepath;
+        }
     }
 }

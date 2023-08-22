@@ -71,7 +71,7 @@ namespace GetMeThatPage3.Scraper
         {
             // Try to get Resource from dictionary
             // TODO: Check all the null values in code
-            if (resources.TryGetValue(resourceFile.Url, out ResourceFile? savedResource))
+            if (resources.TryGetValue(resourceFile?.Remote?.RelativePath, out ResourceFile? savedResource))
             {
                 if (savedResource.State.IsSaved)
                     return true;
@@ -88,7 +88,7 @@ namespace GetMeThatPage3.Scraper
                 //TODO: Save Resource
                 //TODO: Set proper boolean values
                 //TODO: Replace The ResourceFile in dictionary
-                if(resources.TryAdd(resourceFile.Url, resourceFile))
+                if(resources.TryAdd(resourceFile.Remote.RelativePath, resourceFile))
                 {
                     // Added successfully
                     return true;
@@ -102,12 +102,17 @@ namespace GetMeThatPage3.Scraper
 
         private ResourceFile DownLoadAndSave(ResourceFile savedResource)
         {
+            //if(savedResource.Local.AbsolutePath)
+
             //TODO: Check if it is saved, but first if exists on disk
             //TODO: Download Resource
             //TODO: Save Resource
+
+
             //TODO: Set proper boolean values
             savedResource.State.IsSaved = true;
             return savedResource;
         }
+
     }
 }

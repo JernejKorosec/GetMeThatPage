@@ -31,9 +31,13 @@ namespace GetMeThatPage3.Helpers.Url.Extensions
             }
             return url;
         }
-        public static string AddSchema(this string url, Schema schema)
+        public static string AddSchema(this string url, string schema)
         {
             return schema.Equals(Schema.Http) ? Schema.Http + url : Schema.Https + url;
+        }
+        public static string AddIndexHtmlIfNeeded(this string url)
+        {
+            return url.EndsWith("/") ? url + "index.html" : url;
         }
         public static string? ExtractDomain(this string url)
         {

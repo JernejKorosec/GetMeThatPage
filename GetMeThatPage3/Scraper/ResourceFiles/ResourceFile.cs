@@ -1,5 +1,4 @@
-﻿using GetMeThatPage3.Scraper.ResourceFiles;
-using GetMeThatPage3.Helpers.State;
+﻿using GetMeThatPage3.Helpers.State;
 
 namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
 {
@@ -14,21 +13,20 @@ namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
     /// </summary>
     public class ResourceFile
     {
-        private string url;
-        public string Url
-        {
-            get { return url; }
-        }
         public ResourceFile(string url)
         {
-            this.url = url;
             State = new State();
-        }
+            Local = new LocalPath();
+            Remote = new RemotePath();
+            Remote.RelativePath = url;
 
+            Remote.setAbsoluteFromRelative();
+            int stopfordebugandfood = 1;
+        }
         public static string? AppRoot { get; set; }  // c:\some\where\
         public static string? WebRoot { get; set; } // http://books.toscrape.com
-        public FilePath? Remote { get; set; }
-        public FilePath? Local { get; set; }
+        public RemotePath Remote { get; set; }
+        public LocalPath Local { get; set; }
         public State State { get; set; }
     }
 }
