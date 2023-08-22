@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GetMeThatPage3.Scraper.ResourceFiles
+﻿namespace GetMeThatPage3.Scraper.ResourceFiles
 {    /// <summary>
      /// Properties naming convention
      /// Remote   is Web
@@ -16,12 +10,29 @@ namespace GetMeThatPage3.Scraper.ResourceFiles
      /// </summary>
     public class FilePath
     {
-        public string? Filename { get; set; }  // index.html
+        private string? filename;
+        public string? Filename
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(RelativePath))
+                    return Path.GetFileName(RelativePath);
+                else return filename;
+            }
+            set { filename = value; }
+        }
+        private string? extension;
+        public string? Extension
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(Filename))
+                    return Path.GetExtension(Filename);
+                else return extension;
+            }
+            set { extension = value; }
+        }
         public string? RelativePath { get; set; }      // oscar/kilo/
         public string? AbsolutePath { get; set; }     // oscar/kilo/index.html
-        public string? getExtension()
-        {
-            return Path.GetExtension(Filename);
-        }
     }
 }
