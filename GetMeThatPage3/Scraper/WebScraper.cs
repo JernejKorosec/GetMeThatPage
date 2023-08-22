@@ -27,10 +27,10 @@ namespace GetMeThatPage3.Scraper
                 ResourceFile.WebRoot = _webPageUrl;
                 ResourceFile.AppRoot = _appRoot;
             }
-            url = CopyResource(url); // Copies url resource and gets next url from dictionary
+            url = CopyResource(url).GetNextUrl(); // Copies url resource localy and gets next url from dictionary
             
 
-            if (AreAllPagesVisited()) return;
+            if (AreAllPagesVisited(url)) return;
             if (Pagecount>2) return; // Hard return
             Pagecount++;
 
@@ -61,14 +61,21 @@ namespace GetMeThatPage3.Scraper
             // Wait for all read tasks to complete
             await Task.WhenAll(readTasks);
         }
-        private string CopyResource(string url)
+        private string GetNextUrl()
         {
-            //TODO: implementation
+
+            // TODO: Implementation
+            // Pogleda v listo in skuša dobiti naslednji url
             return "";
         }
-        private bool AreAllPagesVisited()
+        private WebScraper CopyResource(string url)
         {
             //TODO: implementation
+            return this;
+        }
+        private bool AreAllPagesVisited(string url)
+        {
+            if (string.IsNullOrEmpty(url)) return true;
             return false;
         }
         private async Task AddToDictionaryAsync(string key, string value)
