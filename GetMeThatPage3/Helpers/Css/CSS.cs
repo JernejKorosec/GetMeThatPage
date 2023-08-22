@@ -1,4 +1,6 @@
-﻿namespace GetMeThatPage2.Helpers.WebOperations.Css
+﻿using GetMeThatPage3.Helpers.State;
+
+namespace GetMeThatPage2.Helpers.WebOperations.Css
 {
     /// <summary>
     /// Remote   is Web
@@ -14,6 +16,7 @@
         public string? RemoteRelativePath { get; set; }     // somewhere/
         public string? LocalAbsolutePath { get; set; }      // c:\www.example.com\somewhere\
         public string? LocalRelativePath { get; set; }      // www.example.com\somewhere\
+        public State? State { get; set; }
         public List<CssUrlResource>? UrlResources { get; set; }
     }
 }

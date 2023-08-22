@@ -55,3 +55,32 @@ za CSS Resource isSaved, isParsed, isChanged, areCSSResourcesRenamed
 
 Lahko pa samo uporabim dolocene flage če je določen tip datoteke
 torej rabim specificne strukture objektov
+
+
+Rabim kodo ki
+
+Shrani spletni, url ki je že preračunan absolutno
+V isto strukturo shrani objekt, ki potrebuje vse podatke
+
+VSAK NASLOV, KI JE OBDELAN IMA LAKO TRI FLAGE
+
+ČE JE HTML
+- is Parsed
+- is Saved
+
+- Skupaj is Done
+
+ČE JE CSS
+- is Parsed
+- is Saved
+- is Corrected (Resourci znotraj CSS preimenovani, prav tako datoteke na aktere CSS kaže)
+- Skupaj is Done
+
+Lahko bi imel tudi flage:
+- needsRenaming
+- isRenamed
+
+- needsContentChanged
+- isContentChanged
+
+
