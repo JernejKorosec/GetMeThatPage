@@ -29,7 +29,7 @@ namespace GetMeThatPage3.Scraper
                 ResourceFile.AppRoot = _appRoot;
                 url = ResourceFile.WebRoot;
             }
-            SaveResource(GetNextUrl(url));  
+            SaveResource(GetNextResource(url));  
 
 
             //if (AreAllPagesVisited(url)) return;
@@ -62,7 +62,7 @@ namespace GetMeThatPage3.Scraper
             // Wait for all read tasks to complete
             await Task.WhenAll(readTasks);
         }
-        private string GetNextUrl(string? url)
+        private string GetNextResource(string? url)
         {
             string? nextUrl="";
 
