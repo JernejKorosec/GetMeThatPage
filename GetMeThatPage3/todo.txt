@@ -1,0 +1,57 @@
+﻿Html resource are downloaded as stream with HTML Agility Pack
+They are than saved as a file in proper directory or/and processed as stream.
+
+CSS resource are loaded from within HTML files from web OR when files are saved.
+
+Kot razvijalec rabim genericno metodo za nalaganje podatkov iz spletnih naslovov,
+vse kar potrebujem je zdownloadati html datoteko in vsenjene resource
+in nato od teh resourceov če niso html datoteke resource
+
+
+ WebScraper spider = new WebScraper("http://books.toscrape.com");
+
+ 
+ Rabimo listo 
+
+
+ Najprej zdownloadam 
+
+ vse datoteke iz nekega htmlja
+
+            // tu se začnejo taski
+            Task[]? addTasks = new Task[3];
+            for (int i = 0; i < addTasks.Length; i++)
+            {
+                addTasks[i] = Task.Run(() => AddToDictionaryAsync(URL, IMEDATOTEKE);
+            }
+
+            // Wait for all add tasks to complete
+            await Task.WhenAll(addTasks);
+
+Ta klic se lahko zgodi rekruzivno in asinhrono
+
+Primer ko naložimo URL OD CSSja
+sam CSS lahko vsebuje druge resource.
+
+Torej znotraj AddToDictionaryAsync(URL, IMEDATOTEKE);
+funkcije preveri če url vsebuje CSS, če ga vsebuje poklice zopet
+ta del kode samo tokrat z CSS datoteko
+
+            Task[]? addTasks = new Task[3];
+            for (int i = 0; i < addTasks.Length; i++)
+            {
+                addTasks[i] = Task.Run(() => AddToDictionaryAsync(CSSURL, IMEDATOTEKE);
+            }
+
+            // Wait for all add tasks to complete
+            await Task.WhenAll(addTasks);
+
+
+To bi se dalo narediti kot rekruzivni klic sicer samo za globino 1 ni pa nujno.
+
+pomembno je da so flagi v resourcih kot so recimo
+za HTML Resource isSaved, isParsed in 
+za CSS Resource isSaved, isParsed, isChanged, areCSSResourcesRenamed
+
+Lahko pa samo uporabim dolocene flage če je določen tip datoteke
+torej rabim specificne strukture objektov
