@@ -12,7 +12,6 @@ namespace GetMeThatPage3.Scraper
     {
         private readonly string? _webPageUrl;
         private readonly string? _appRoot;
-        
         public WebScraper(string? webPageUrl, string? appRoot)
         {
             _webPageUrl = webPageUrl;
