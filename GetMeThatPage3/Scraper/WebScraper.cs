@@ -34,9 +34,12 @@ namespace GetMeThatPage3.Scraper
             if (Pagecount>2) return; // Hard return
             Pagecount++;
 
+            await executeRunAsync();
             await Run(Pagecount);
+        }
 
-
+        private async Task executeRunAsync()
+        {
             // Create a pool of 3 threads for adding to the ConcurrentDictionary asynchronously
             Task[]? addTasks = new Task[3];
             for (int i = 0; i < addTasks.Length; i++)
@@ -55,23 +58,19 @@ namespace GetMeThatPage3.Scraper
                 int copyOfI = i; // Capture a local copy of i
                 readTasks[i] = Task.Run(() => ReadFromDictionary($"Key{copyOfI}"));
             }
-
             // Wait for all read tasks to complete
             await Task.WhenAll(readTasks);
         }
-
         private string CopyResource(string url)
         {
             //TODO: implementation
             return "";
         }
-
         private bool AreAllPagesVisited()
         {
             //TODO: implementation
             return false;
         }
-
         private async Task AddToDictionaryAsync(string key, string value)
         {
             await Task.Delay(TimeSpan.FromMilliseconds(100)); // Simulating asynchronous work
