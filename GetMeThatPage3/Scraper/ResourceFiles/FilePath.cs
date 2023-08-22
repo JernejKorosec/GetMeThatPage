@@ -11,6 +11,7 @@
     public class FilePath
     {
         private string? filename;
+        private string? extension;
         public string? Filename
         {
             get
@@ -21,7 +22,6 @@
             }
             set { filename = value; }
         }
-        private string? extension;
         public string? Extension
         {
             get
