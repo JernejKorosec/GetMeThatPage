@@ -36,9 +36,13 @@
         public string? AbsolutePath { get; set; }     // oscar/kilo/index.html or
                                                       // c:\somewhere\books.toscrape.com\oscar\kilo\index.html
         public abstract bool EndsWithFileName(string filepath);
-        public  string AddIndexHtmlToUrl(string filepath)
+        public  string AddIndexHtmlToPath(string filepath)
         {
             return filepath.EndsWith("/") || filepath.EndsWith(@"\") ? filepath + "index.html" : filepath;
+        }
+        public void SetFileName(string filenameArg)
+        {
+            filename = filenameArg;
         }
     }
 }

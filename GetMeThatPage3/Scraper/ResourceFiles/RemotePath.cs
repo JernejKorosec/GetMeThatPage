@@ -13,27 +13,49 @@ namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
         public bool setAbsoluteFromRelative(string? baseuri = null)
         {
             if (string.IsNullOrEmpty(baseuri))
+            {
                 if (!string.IsNullOrEmpty(base.RelativePath))
                 {
+
+                    // is relative isMiddleRelative (urlPartRelative)
+                    // example
+                    // https://www.24ur.com/novice/tujina/slovenski-tanki-v-ukrajini-ustavili-napredovanje-ruske-vojske.html
+                    // - https://www.24ur.com/                                                      // schema://host
+                    // - novice/tujina                                                              // midleReltivepath
+                    // - /slovenski-tanki-v-ukrajini-ustavili-napredovanje-ruske-vojske.html        // endRelativeWithFilename
                     if (base.RelativePath.HasSchema())
                     {
                         // FIXME:TODO:CHECK
-                        base.AbsolutePath = base.AddIndexHtmlToUrl(base.RelativePath);
-                        return true;
+                        base.AbsolutePath = base.AddIndexHtmlToPath(base.RelativePath);
+
+                        //return true;
                     }
                     else
                     {
                         base.AbsolutePath = base.RelativePath.AddSchema(Schema.Http);
-                        base.AbsolutePath = base.AddIndexHtmlToUrl(base.AbsolutePath);
-                        return true;
+                        base.AbsolutePath = base.AddIndexHtmlToPath(base.AbsolutePath);
+                        //return true;
+                    }
+
+                    if (EndsWithFileName(base.AbsolutePath))
+                    {
+                        //string fileName = Path.GetFileName(new Uri(uriString).AbsolutePath);
+
                     }
                 }
+            }
+            else
+            {
+                // TODO: Whole lotta work later
+            }
             return false;
         }
-       
+
         public override bool EndsWithFileName(string url)
         {
             return !url.EndsWith("/");
         }
+
+
     }
 }
