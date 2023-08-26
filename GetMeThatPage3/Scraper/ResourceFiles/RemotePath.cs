@@ -20,8 +20,15 @@ namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
             RelativePath = url;
             if (!string.IsNullOrEmpty(url))
             {
-                    string? tempUrlPath = RelativePath;
-
+                string? tempUrlPath = RelativePath;
+                if (isRelative(tempUrlPath))
+                {
+                    Uri baseUri = new Uri(WebRoot);
+                    Uri relativeUri = new Uri(baseUri, tempUrlPath);
+                    AbsolutePath = relativeUri.ToString();
+                }
+                else
+                {
                     // check for schema
                     if (tempUrlPath.HasSchema())
                         tempUrlPath = RelativePath;
@@ -31,15 +38,32 @@ namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
                     if (EndsWithFileName(tempUrlPath))
                         AbsolutePath = tempUrlPath;
                     else
-                    //AbsolutePath = AddIndexHtmlToPath(tempUrlPath);
-                    AbsolutePath = tempUrlPath;
-                return true;
+                        //AbsolutePath = AddIndexHtmlToPath(tempUrlPath);
+                        AbsolutePath = tempUrlPath;
+                    return true;
+                }
+
+               
             }
             return false;
         }
         public override bool EndsWithFileName(string url)
         {
             return !url.EndsWith("/");
+        }
+        public bool isRelative(string url)
+        {
+            /*
+            bool b1 = url.HasSchema();
+            bool b2 = url.StartsWith("/") || url.StartsWith("..") || url.StartsWith(@"\");
+            // ...
+            return !url.EndsWith("/");
+            */
+            //if (Uri.TryCreate(url, UriKind.Absolute, out uri))
+            if (Uri.TryCreate(url, UriKind.Absolute, out _))
+                return false;
+            else
+                return true;
         }
         public override string AddIndexHtmlToPath(string filepath)
         {

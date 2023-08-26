@@ -1,11 +1,8 @@
-﻿using GetMeThatPage2.Helpers.WebOperations.ResourceFiles;
-using System.Collections;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using static System.Net.Mime.MediaTypeNames;
-using System.Runtime.CompilerServices;
+﻿using System.Collections.Concurrent;
+using GetMeThatPage2.Helpers.WebOperations.ResourceFiles;
+using GetMeThatPage3.Helpers.Html.Extensions;
 using GetMeThatPage3.Scraper.Downloader;
+using HtmlAgilityPack;
 
 namespace GetMeThatPage3.Scraper
 {
@@ -79,8 +76,9 @@ namespace GetMeThatPage3.Scraper
                 else
                 {
                     savedResource = DownLoadAndSave(savedResource);
-                    //TODO: Check if resource in dictionaty changes(Look Line up)
-                    return true; ; //FIXME: When TODO done
+                    //DOES: It Changes
+                    ParseForLinksFromFile(resources,savedResource).Wait();
+                    return true; ; //DONE
                 }
             }
             else
@@ -119,6 +117,43 @@ namespace GetMeThatPage3.Scraper
                 savedResource.State.IsSaved = true;
             }
             return savedResource;
+        }
+
+        // Todo, can be 2 functions
+        // It would be wise to pase as the file is open
+        // Todo: Solid: Move To ResourceFile Class
+        public static Task ParseForLinksFromFile(ConcurrentDictionary<string, ResourceFile> resources, ResourceFile resourceFile)
+        {
+            if (resources.TryGetValue(resourceFile?.Remote?.RelativePath, out ResourceFile? savedResource))
+            {
+                if (savedResource.State.IsSaved || File.Exists(savedResource.Local.AbsolutePath))
+                {
+                    // Load the HTML file
+                    HtmlDocument doc = new HtmlDocument();
+                    doc.Load(savedResource.Local.AbsolutePath);
+
+                    // Select source nodes using an XPath query
+                    string sourceXPath = "//img[@src] | //script[@src] | //link[@href] | //a[@href]";
+                    HtmlNodeCollection sourceNodes = doc.DocumentNode.SelectNodes(sourceXPath);
+
+                    if (sourceNodes != null)
+                    {
+                        Console.WriteLine("Source nodes found:");
+                        foreach (HtmlNode node in sourceNodes)
+                        {
+                            string? relativePath = node.GetHTMLNodeAttributeValue();
+                            ResourceFile newResourceFromLink = new ResourceFile(relativePath);
+                            bool successFullAdd = resources.TryAdd(newResourceFromLink.Remote.RelativePath, newResourceFromLink);
+                            Console.WriteLine("Source: " + relativePath);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No source nodes found.");
+                    }
+                }
+            }
+            return Task.CompletedTask;
         }
     }
 }
