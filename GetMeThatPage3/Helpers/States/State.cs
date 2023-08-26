@@ -1,4 +1,4 @@
-﻿namespace GetMeThatPage3.Helpers.State
+﻿namespace GetMeThatPage3.Helpers.States
 {
     public class State
     {

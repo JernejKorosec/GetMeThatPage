@@ -11,11 +11,4 @@
     <PackageReference Include="HtmlAgilityPack" Version="1.11.51" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="HTML\Tag\Anchor\" />
-    <Folder Include="HTML\Tag\Javascript\" />
-    <Folder Include="HTML\Tag\Link\" />
-    <Folder Include="HTML\Tag\Script\" />
-  </ItemGroup>
-
 </Project>

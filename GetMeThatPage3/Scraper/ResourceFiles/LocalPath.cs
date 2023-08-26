@@ -1,7 +1,7 @@
 ﻿using GetMeThatPage3.Helpers.Url.Extensions;
 using GetMeThatPage3.Scraper.ResourceFiles;
 
-namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
+namespace GetMeThatPage3.Helpers.WebOperations.ResourceFiles
 {
     // Todo: Functions to convert from Remote to Local Path
     // Given only baseUri and Remote Relative Path

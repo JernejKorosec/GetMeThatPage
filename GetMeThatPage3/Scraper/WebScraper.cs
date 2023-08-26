@@ -1,8 +1,12 @@
 ﻿using System.Collections.Concurrent;
-using GetMeThatPage2.Helpers.WebOperations.ResourceFiles;
+using GetMeThatPage3.Helpers.WebOperations.ResourceFiles;
 using GetMeThatPage3.Helpers.Html.Extensions;
+using GetMeThatPage3.Helpers.Url.Extensions;
 using GetMeThatPage3.Scraper.Downloader;
 using HtmlAgilityPack;
+using static GetMeThatPage3.Scraper.ResourceFiles.Extensions.ResourceFileExtensions;
+using System;
+
 
 namespace GetMeThatPage3.Scraper
 {
@@ -16,30 +20,27 @@ namespace GetMeThatPage3.Scraper
             _appRoot = appRoot;
         }
         private ConcurrentDictionary<string, ResourceFile> resources = new ConcurrentDictionary<string, ResourceFile>();
-        
-        public async Task Run(int Pagecount=0)
+        public async Task Run(int Pagecount = 0)
         {
             string? url = "";
             // First run
-            if(Pagecount == 0) {
+            if (Pagecount == 0)
+            {
                 ResourceFile.WebRoot = _webPageUrl;
                 ResourceFile.AppRoot = _appRoot;
                 url = ResourceFile.WebRoot;
             }
 
-
             bool isPageDone = SaveResource(GetNextResource(url));
             bool unsavedResourcesExists = UnsavedResourcesExists();
             if (isPageDone && !unsavedResourcesExists) return;
-            if (Pagecount>2) return; // Hard return
+            if (Pagecount > 5) return; // Hard return
             else Pagecount++;
 
             await Run(Pagecount);
         }
-
         private bool UnsavedResourcesExists()
         {
-            //IEnumerable<ResourceFile> unsavedResources = resources.Values.Where(resource => !resource.State.IsSaved);
             bool hasUnsavedResources = resources.Values.Any(resource => !resource.State.IsSaved);
             return hasUnsavedResources;
         }
@@ -47,7 +48,6 @@ namespace GetMeThatPage3.Scraper
         {
             ResourceFile? resource;
             // Try to get Resource from dictionary
-
             if (string.IsNullOrEmpty(url))
             {
                 resource = GetNextNotSavedResource();
@@ -56,41 +56,14 @@ namespace GetMeThatPage3.Scraper
             {
                 // Obivously, first run of the recursive iteration
                 resource = new ResourceFile(url);
-                if (resources.TryAdd(url, resource))
-                    return resource;
-                else
-                    throw new Exception();
+
+                if (!url.HasSchema()) // fixme!
+                    if (resources.TryAdd(url, resource))
+                        return resource;
+                    else
+                        throw new Exception();
             }
             return resource;
-            /*
-            if (resources.TryGetValue(url, out ResourceFile? savedResource))
-            {
-                
-                if (!savedResource.State.IsSaved)
-                {
-                    // TODO: Implementation
-                    Console.WriteLine($"Resource exists, not saved, saving: {url} - {savedResource.State}");
-                    return savedResource;
-            
-                }
-                else
-                {
-                    Console.WriteLine($"Resource exists, saved, returning: {url} - {savedResource.State}");
-                    resource = new ResourceFile(url);
-                    return resource;
-                }
-            }
-            else
-            {
-                Console.WriteLine($"Resource not found, saving, adding to resources, returning: {url}");
-                // Obivously, first run of the recursive iteration
-                resource = new ResourceFile(url);
-                if(resources.TryAdd(url, resource))
-                    return resource;
-                else
-                    throw new Exception();
-            }
-            */
         }
         private ResourceFile? GetNextNotSavedResource()
         {
@@ -99,56 +72,64 @@ namespace GetMeThatPage3.Scraper
         }
         private bool SaveResource(ResourceFile? resourceFile)
         {
-            if(resourceFile == null)
-            {
-                int stophere = 0;
-            }
+            // Obviously, need to sepereate to seperate parsable files (HTMLs, CSS) and other files
+            // not parsable files (images, fonts, javascript files)
+            Console.WriteLine("Url: " + resourceFile?.Remote?.RelativePath);
 
-            int elsestophere = 1;
-
-            if (resources.TryGetValue(resourceFile?.Remote?.RelativePath, out ResourceFile? savedResource))
-            {
-                if (savedResource.State.IsSaved)
-                    return true;
-                else
-                {
-                    savedResource = DownLoadAndSave(savedResource);
-                    ParseForLinksFromFile(resources,savedResource).Wait();
-                    return true;
-                }
-            }
+            if (resourceFile == null) return false;
             else
             {
-                //TODO: Download Resource
-                //TODO: Save Resource
-                //TODO: Set proper boolean values
-                //TODO: Replace The ResourceFile in dictionary
-                if(resources.TryAdd(resourceFile.Remote.RelativePath, resourceFile))
+                //FIXME remove later or refactor
+                if (!resourceFile.Local.AbsolutePath.Contains(@"GetMeThatPage3\bin\Debug\net7.0\books.toscrape.com"))
                 {
-                    // Added successfully
-                    return true;
+                    Console.WriteLine("Url: " + resourceFile.Remote.RelativePath);
+                    throw new Exception("Trying to save outside of allowed resource!!");
+                }
+
+                if (resources.TryGetValue(resourceFile?.Remote?.RelativePath, out ResourceFile? savedResource))
+                {
+                    if (savedResource.State.IsSaved)
+                        return true;
+                    else
+                    {
+                        if (resourceFile.isHTML())
+                        {
+                            savedResource = DownLoadAndSave(savedResource);
+                            ParseForLinksFromFile(resources, savedResource).Wait();
+                            return true;
+                        }
+                        else
+                        {
+                            savedResource = DownLoadAndSave(savedResource);
+                            // TODO: Just download images
+                        }
+                        
+                    }
                 }
                 else
                 {
-                    throw new Exception();
+                    if (resources.TryAdd(resourceFile.Remote.RelativePath, resourceFile))
+                        return true;
+                    else
+                        throw new Exception();
                 }
+
+                
             }
+            return false;
+
+
+            
         }
         private ResourceFile DownLoadAndSave(ResourceFile savedResource)
         {
-            //Check if it is saved or first if exists on disk
             if (savedResource.State.IsSaved || File.Exists(savedResource.Local.AbsolutePath))
                 return savedResource;
             else
             {
-                // Create directory if it doesnt exists
                 string? fileDir = Path.GetDirectoryName(savedResource.Local.AbsolutePath);
                 if (!Directory.Exists(fileDir)) Directory.CreateDirectory(fileDir);
-                // FIXME: Check if possible making async or is it for current application inheritance layer state not neccesary
-                //DOES: Download Resource
-                //DOES: Save Resource
                 FileDownloader.DownloadAndSaveFile(savedResource.Remote.AbsolutePath, savedResource.Local.AbsolutePath).Wait();
-                //DOES: Set proper boolean values
                 savedResource.State.IsSaved = true;
             }
             return savedResource;
@@ -157,31 +138,42 @@ namespace GetMeThatPage3.Scraper
         {
             if (resources.TryGetValue(resourceFile?.Remote?.RelativePath, out ResourceFile? savedResource))
             {
-                if (savedResource.State.IsSaved || File.Exists(savedResource.Local.AbsolutePath))
+                if (savedResource.State.IsSaved && File.Exists(savedResource.Local.AbsolutePath))
+                //if (savedResource.State.IsSaved || File.Exists(savedResource.Local.AbsolutePath))
                 {
-                    // Load the HTML file
-                    HtmlDocument doc = new HtmlDocument();
-                    doc.Load(savedResource.Local.AbsolutePath);
-
-                    // Select source nodes using an XPath query
-                    string sourceXPath = "//img[@src] | //script[@src] | //link[@href] | //a[@href]";
-                    HtmlNodeCollection sourceNodes = doc.DocumentNode.SelectNodes(sourceXPath);
-
-                    if (sourceNodes != null)
+                    if (savedResource.isHTML())
                     {
-                        Console.WriteLine("Source nodes found:");
-                        foreach (HtmlNode node in sourceNodes)
+                        // Load the HTML file
+                        HtmlDocument doc = new HtmlDocument();
+                        doc.Load(savedResource.Local.AbsolutePath);
+
+                        // Select source nodes using an XPath query
+                        string sourceXPath = "//img[@src] | //script[@src] | //link[@href] | //a[@href]";
+                        HtmlNodeCollection sourceNodes = doc.DocumentNode.SelectNodes(sourceXPath);
+
+                        if (sourceNodes != null)
                         {
-                            string? relativePath = node.GetHTMLNodeAttributeValue();
-                            ResourceFile newResourceFromLink = new ResourceFile(relativePath);
-                            bool successFullAdd = resources.TryAdd(newResourceFromLink.Remote.RelativePath, newResourceFromLink);
-                            Console.WriteLine("Source: " + relativePath);
+                            //Console.WriteLine("Source nodes found:");
+                            foreach (HtmlNode node in sourceNodes)
+                            {
+                                string? relativePath = node.GetHTMLNodeAttributeValue();
+                                ResourceFile newResourceFromLink = new ResourceFile(relativePath);
+                                bool successFullAdd = resources.TryAdd(newResourceFromLink.Remote.RelativePath, newResourceFromLink);
+                                //Console.WriteLine("Source: " + relativePath);
+                            }
                         }
+                        else
+                        {
+                            //Console.WriteLine("No source nodes found.");
+                        }
+
                     }
                     else
                     {
-                        Console.WriteLine("No source nodes found.");
+                        // TODO: Just download the pic and set isSaved to true;
                     }
+
+
                 }
             }
             return Task.CompletedTask;

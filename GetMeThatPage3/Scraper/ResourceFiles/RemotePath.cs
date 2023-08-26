@@ -2,7 +2,7 @@
 using GetMeThatPage3.Helpers.Url.Extensions;
 using GetMeThatPage3.Scraper.ResourceFiles;
 
-namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
+namespace GetMeThatPage3.Helpers.WebOperations.ResourceFiles
 {
     // TODO:
     // URI manipulation functions
@@ -20,12 +20,22 @@ namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
             RelativePath = url;
             if (!string.IsNullOrEmpty(url))
             {
+
+                if (url.StartsWith("../") && (url.ToLower().EndsWith(".html") || url.ToLower().EndsWith(".htm")))
+                {
+                    // FIXME
+                    //throw new Exception("url:" + url);
+                    int STOPHERE = 1;
+                }
+
+
                 string? tempUrlPath = RelativePath;
                 if (isUriRelative(tempUrlPath))
                 {
                     Uri baseUri = new Uri(WebRoot);
                     Uri relativeUri = new Uri(baseUri, tempUrlPath);
                     AbsolutePath = relativeUri.ToString();
+                    //Console.WriteLine("AbsolutePath: " + AbsolutePath);
                 }
                 else
                 {

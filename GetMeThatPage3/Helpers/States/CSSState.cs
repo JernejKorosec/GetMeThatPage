@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GetMeThatPage3.Helpers.State
+namespace GetMeThatPage3.Helpers.States
 {
     public class CSSState : State
     {
