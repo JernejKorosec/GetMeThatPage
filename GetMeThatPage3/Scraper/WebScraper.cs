@@ -19,7 +19,9 @@ namespace GetMeThatPage3.Scraper
             _webPageUrl = webPageUrl;
             _appRoot = appRoot;
         }
+
         private ConcurrentDictionary<string, ResourceFile> resources = new ConcurrentDictionary<string, ResourceFile>();
+
         public async Task Run(int Pagecount = 0)
         {
             string? url = "";
@@ -157,7 +159,10 @@ namespace GetMeThatPage3.Scraper
                             foreach (HtmlNode node in sourceNodes)
                             {
                                 string? relativePath = node.GetHTMLNodeAttributeValue();
+
                                 ResourceFile newResourceFromLink = new ResourceFile(relativePath);
+                                //FixMe, adding source and destinatino (ResourceFile and relative uri)
+                                //ResourceFile newResourceFromLink = new ResourceFile(resourceFile,relativePath);
                                 bool successFullAdd = resources.TryAdd(newResourceFromLink.Remote.RelativePath, newResourceFromLink);
                                 //Console.WriteLine("Source: " + relativePath);
                             }

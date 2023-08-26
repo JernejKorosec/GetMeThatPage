@@ -34,5 +34,6 @@ namespace GetMeThatPage3.Helpers.WebOperations.ResourceFiles
         public RemotePath Remote { get; set; }
         public LocalPath Local { get; set; }
         public State State { get; set; }
+        public string? RelativePath { get; }
     }
 }
