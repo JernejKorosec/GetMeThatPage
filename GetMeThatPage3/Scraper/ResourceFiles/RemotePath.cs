@@ -21,7 +21,7 @@ namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
             if (!string.IsNullOrEmpty(url))
             {
                 string? tempUrlPath = RelativePath;
-                if (isRelative(tempUrlPath))
+                if (isUriRelative(tempUrlPath))
                 {
                     Uri baseUri = new Uri(WebRoot);
                     Uri relativeUri = new Uri(baseUri, tempUrlPath);
@@ -51,20 +51,7 @@ namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
         {
             return !url.EndsWith("/");
         }
-        public bool isRelative(string url)
-        {
-            /*
-            bool b1 = url.HasSchema();
-            bool b2 = url.StartsWith("/") || url.StartsWith("..") || url.StartsWith(@"\");
-            // ...
-            return !url.EndsWith("/");
-            */
-            //if (Uri.TryCreate(url, UriKind.Absolute, out uri))
-            if (Uri.TryCreate(url, UriKind.Absolute, out _))
-                return false;
-            else
-                return true;
-        }
+
         public override string AddIndexHtmlToPath(string filepath)
         {
             return filepath.EndsWith("/") ? filepath + "index.html" : filepath;

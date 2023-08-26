@@ -26,17 +26,43 @@ namespace GetMeThatPage3.Scraper
                 ResourceFile.AppRoot = _appRoot;
                 url = ResourceFile.WebRoot;
             }
-            bool allDone = SaveResource(GetNextResource(url));
-            if (allDone) return;
+
+
+            bool isPageDone = SaveResource(GetNextResource(url));
+            bool unsavedResourcesExists = UnsavedResourcesExists();
+            if (isPageDone && !unsavedResourcesExists) return;
             if (Pagecount>2) return; // Hard return
             else Pagecount++;
 
             await Run(Pagecount);
         }
-        private ResourceFile GetNextResource(string? url)
+
+        private bool UnsavedResourcesExists()
         {
-            ResourceFile resource;
+            //IEnumerable<ResourceFile> unsavedResources = resources.Values.Where(resource => !resource.State.IsSaved);
+            bool hasUnsavedResources = resources.Values.Any(resource => !resource.State.IsSaved);
+            return hasUnsavedResources;
+        }
+        private ResourceFile? GetNextResource(string? url)
+        {
+            ResourceFile? resource;
             // Try to get Resource from dictionary
+
+            if (string.IsNullOrEmpty(url))
+            {
+                resource = GetNextNotSavedResource();
+            }
+            else
+            {
+                // Obivously, first run of the recursive iteration
+                resource = new ResourceFile(url);
+                if (resources.TryAdd(url, resource))
+                    return resource;
+                else
+                    throw new Exception();
+            }
+            return resource;
+            /*
             if (resources.TryGetValue(url, out ResourceFile? savedResource))
             {
                 
@@ -64,11 +90,22 @@ namespace GetMeThatPage3.Scraper
                 else
                     throw new Exception();
             }
+            */
         }
-        private bool SaveResource(ResourceFile resourceFile)
+        private ResourceFile? GetNextNotSavedResource()
         {
-            // Try to get Resource from dictionary
-            // TODO: Check all the null values in code
+            IEnumerable<ResourceFile>? unsavedResources = resources.Values.Where(resource => !resource.State.IsSaved);
+            return unsavedResources.FirstOrDefault();
+        }
+        private bool SaveResource(ResourceFile? resourceFile)
+        {
+            if(resourceFile == null)
+            {
+                int stophere = 0;
+            }
+
+            int elsestophere = 1;
+
             if (resources.TryGetValue(resourceFile?.Remote?.RelativePath, out ResourceFile? savedResource))
             {
                 if (savedResource.State.IsSaved)
@@ -76,9 +113,8 @@ namespace GetMeThatPage3.Scraper
                 else
                 {
                     savedResource = DownLoadAndSave(savedResource);
-                    //DOES: It Changes
                     ParseForLinksFromFile(resources,savedResource).Wait();
-                    return true; ; //DONE
+                    return true;
                 }
             }
             else
@@ -98,7 +134,6 @@ namespace GetMeThatPage3.Scraper
                 }
             }
         }
-
         private ResourceFile DownLoadAndSave(ResourceFile savedResource)
         {
             //Check if it is saved or first if exists on disk
@@ -118,10 +153,6 @@ namespace GetMeThatPage3.Scraper
             }
             return savedResource;
         }
-
-        // Todo, can be 2 functions
-        // It would be wise to pase as the file is open
-        // Todo: Solid: Move To ResourceFile Class
         public static Task ParseForLinksFromFile(ConcurrentDictionary<string, ResourceFile> resources, ResourceFile resourceFile)
         {
             if (resources.TryGetValue(resourceFile?.Remote?.RelativePath, out ResourceFile? savedResource))

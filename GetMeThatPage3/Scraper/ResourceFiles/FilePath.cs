@@ -44,5 +44,12 @@
         {
             filename = filenameArg;
         }
+        public bool isUriRelative(string url)
+        {
+            if (Uri.TryCreate(url, UriKind.Absolute, out _))
+                return false;
+            else
+                return true;
+        }
     }
 }

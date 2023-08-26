@@ -8,10 +8,12 @@ namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
     //
     public class LocalPath : FilePath
     {
+        private string? WebPageSaveFolder;
         public LocalPath(string appRoot, string webRoot)
         {
             AppRoot = appRoot;
             WebRoot = webRoot;
+            WebPageSaveFolder = getLocalSavePathFromWebPage(appRoot,webRoot);
         }
         public bool setLocalAbsoluteFromRelative(string? url = null)
         {
@@ -19,38 +21,37 @@ namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
             if (!string.IsNullOrEmpty(url))
             {
                 string? tempUrlPath = RelativePath;
-                string? savepath = getLocalSavePathFromWebPage(AppRoot, WebRoot);
+                if (isUriRelative(tempUrlPath))
+                {
+                    AbsolutePath = Path.Combine(WebPageSaveFolder, tempUrlPath);
+                }
+                else 
+                {
+                    if (tempUrlPath.HasSchema())
+                        tempUrlPath = RelativePath.RemoveSchema();
+                    else
+                        tempUrlPath = RelativePath;
 
-                // check for schema
-                if (tempUrlPath.HasSchema())
-                    tempUrlPath = RelativePath.RemoveSchema();
-                else
-                    tempUrlPath = RelativePath;
-
-
-                // ce vsebuje books.toscrape.com moramo ta text umakniti ker je že v root poti
-
-                string? hostName = WebRoot.RemoveSchema();
-                if (!string.IsNullOrEmpty(tempUrlPath)) { 
-                    if (tempUrlPath.StartsWith(hostName))
+                    string? hostName = WebRoot.RemoveSchema();
+                    if (!string.IsNullOrEmpty(tempUrlPath))
                     {
-                        int indexofstring = tempUrlPath.IndexOf(hostName);
-                        //string? modified = tempUrlPath.Remove(indexofstring, hostName.Length).Trim();
-                        string? modified = tempUrlPath.Remove(indexofstring, hostName.Length);
-                        if (modified.Length.Equals(0))
+                        if (tempUrlPath.StartsWith(hostName))
                         {
-                            AbsolutePath = Path.Combine(AppRoot, AddIndexHtmlToPath(tempUrlPath));
-                            return true;
+                            int indexofstring = tempUrlPath.IndexOf(hostName);
+                            string? modified = tempUrlPath.Remove(indexofstring, hostName.Length);
+                            if (modified.Length.Equals(0))
+                            {
+                                AbsolutePath = Path.Combine(AppRoot, AddIndexHtmlToPath(tempUrlPath));
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            AbsolutePath = Path.Combine(AppRoot, tempUrlPath);
                         }
                     }
-                    else
-                    {
-                        // ce vsebuje le ime datoteke, kar pripnemo approotpath-u 
-                        // ce vsebuje relativno pot in ime datoteke kar pripnemo approotpath-u 
-                        // FIXME: Probably CSS, TODO: Later
-                            AbsolutePath = Path.Combine(AppRoot, tempUrlPath);
-                    }
                 }
+                
             }
             return false;
 
