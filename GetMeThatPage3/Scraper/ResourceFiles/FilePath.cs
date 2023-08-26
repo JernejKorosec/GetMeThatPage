@@ -10,6 +10,9 @@
      /// </summary>
     public abstract class FilePath
     {
+        public string? WebRoot;
+        public string? AppRoot;
+
         private string? filename;
         private string? extension;
         public string? Filename
@@ -36,10 +39,7 @@
         public string? AbsolutePath { get; set; }     // oscar/kilo/index.html or
                                                       // c:\somewhere\books.toscrape.com\oscar\kilo\index.html
         public abstract bool EndsWithFileName(string filepath);
-        public  string AddIndexHtmlToPath(string filepath)
-        {
-            return filepath.EndsWith("/") || filepath.EndsWith(@"\") ? filepath + "index.html" : filepath;
-        }
+        public abstract string AddIndexHtmlToPath(string filepath);
         public void SetFileName(string filenameArg)
         {
             filename = filenameArg;

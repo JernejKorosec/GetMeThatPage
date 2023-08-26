@@ -9,53 +9,42 @@ namespace GetMeThatPage2.Helpers.WebOperations.ResourceFiles
     // first Path is always Remote
     public class RemotePath : FilePath
     {
-        // TODO: A function that convert its own relative path to absolute for fetch
-        public bool setAbsoluteFromRelative(string? baseuri = null)
+        public RemotePath(string appRoot, string webRoot)
         {
-            if (string.IsNullOrEmpty(baseuri))
+            AppRoot = appRoot;
+            WebRoot = webRoot;
+        }
+        // TODO: A function that convert its own relative path to absolute for fetch
+        public bool setRemoteAbsoluteFromRelative(string? url = null)
+        {
+            RelativePath = url;
+            if (!string.IsNullOrEmpty(url))
             {
-                if (!string.IsNullOrEmpty(base.RelativePath))
-                {
+                    string? tempUrlPath = RelativePath;
 
-                    // is relative isMiddleRelative (urlPartRelative)
-                    // example
-                    // https://www.24ur.com/novice/tujina/slovenski-tanki-v-ukrajini-ustavili-napredovanje-ruske-vojske.html
-                    // - https://www.24ur.com/                                                      // schema://host
-                    // - novice/tujina                                                              // midleReltivepath
-                    // - /slovenski-tanki-v-ukrajini-ustavili-napredovanje-ruske-vojske.html        // endRelativeWithFilename
-                    if (base.RelativePath.HasSchema())
-                    {
-                        // FIXME:TODO:CHECK
-                        base.AbsolutePath = base.AddIndexHtmlToPath(base.RelativePath);
-
-                        //return true;
-                    }
+                    // check for schema
+                    if (tempUrlPath.HasSchema())
+                        tempUrlPath = RelativePath;
                     else
-                    {
-                        base.AbsolutePath = base.RelativePath.AddSchema(Schema.Http);
-                        base.AbsolutePath = base.AddIndexHtmlToPath(base.AbsolutePath);
-                        //return true;
-                    }
-
-                    if (EndsWithFileName(base.AbsolutePath))
-                    {
-                        //string fileName = Path.GetFileName(new Uri(uriString).AbsolutePath);
-
-                    }
-                }
-            }
-            else
-            {
-                // TODO: Whole lotta work later
+                        tempUrlPath = RelativePath.AddSchema(Schema.Http);
+                    //check for filename
+                    if (EndsWithFileName(tempUrlPath))
+                        AbsolutePath = tempUrlPath;
+                    else
+                    //AbsolutePath = AddIndexHtmlToPath(tempUrlPath);
+                    AbsolutePath = tempUrlPath;
+                return true;
             }
             return false;
         }
-
         public override bool EndsWithFileName(string url)
         {
             return !url.EndsWith("/");
         }
+        public override string AddIndexHtmlToPath(string filepath)
+        {
+            return filepath.EndsWith("/") ? filepath + "index.html" : filepath;
 
-
+        }
     }
 }

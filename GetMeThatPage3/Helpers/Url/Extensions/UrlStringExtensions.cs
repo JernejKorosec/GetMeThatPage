@@ -35,10 +35,12 @@ namespace GetMeThatPage3.Helpers.Url.Extensions
         {
             return schema.Equals(Schema.Http) ? Schema.Http + url : Schema.Https + url;
         }
+       /*
         public static string AddIndexHtmlIfNeeded(this string url)
         {
             return url.EndsWith("/") ? url + "index.html" : url;
         }
+       */
         public static string? ExtractDomain(this string url)
         {
             if (Uri.TryCreate(url, UriKind.Absolute, out Uri? uri))
