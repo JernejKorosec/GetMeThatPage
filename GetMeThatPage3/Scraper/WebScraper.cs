@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using static System.Net.Mime.MediaTypeNames;
 using System.Runtime.CompilerServices;
+using GetMeThatPage3.Scraper.Downloader;
 
 namespace GetMeThatPage3.Scraper
 {
@@ -102,17 +103,22 @@ namespace GetMeThatPage3.Scraper
 
         private ResourceFile DownLoadAndSave(ResourceFile savedResource)
         {
-            //if(savedResource.Local.AbsolutePath)
-
-            //TODO: Check if it is saved, but first if exists on disk
-            //TODO: Download Resource
-            //TODO: Save Resource
-
-
-            //TODO: Set proper boolean values
-            savedResource.State.IsSaved = true;
+            //Check if it is saved or first if exists on disk
+            if (savedResource.State.IsSaved || File.Exists(savedResource.Local.AbsolutePath))
+                return savedResource;
+            else
+            {
+                // Create directory if it doesnt exists
+                string? fileDir = Path.GetDirectoryName(savedResource.Local.AbsolutePath);
+                if (!Directory.Exists(fileDir)) Directory.CreateDirectory(fileDir);
+                // FIXME: Check if possible making async or is it for current application inheritance layer state not neccesary
+                //DOES: Download Resource
+                //DOES: Save Resource
+                FileDownloader.DownloadAndSaveFile(savedResource.Remote.AbsolutePath, savedResource.Local.AbsolutePath).Wait();
+                //DOES: Set proper boolean values
+                savedResource.State.IsSaved = true;
+            }
             return savedResource;
         }
-
     }
 }
